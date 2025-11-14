@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDG AI教學代理人設計器（國中版）| SDG AI Teaching Agent Designer for Junior High</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: linear-gradient(135deg, #f5e6ff 0%, #e6f2ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: #000;
+            margin-bottom: 30px;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(124, 179, 66, 0.1) 100%);
+            border-left: 4px solid #673ab7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .info-banner strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        .info-banner p {
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .info-banner .divider {
+            height: 1px;
+            background: rgba(103, 58, 183, 0.2);
+            margin: 15px 0;
+        }
+
+        /* SDG選擇區 */
+        .sdg-selector {
+            background: linear-gradient(135deg, rgba(124, 179, 66, 0.15) 0%, rgba(156, 204, 101, 0.15) 100%);
+            border: 2px solid #7cb342;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sdg-selector h3 {
+            color: #558b2f;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .sdg-selector p {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .sdg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .sdg-btn {
+            padding: 12px 16px;
+            border: 2px solid #7cb342;
+            background: white;
+            color: #558b2f;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .sdg-btn:hover {
+            background: #f1f8e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 179, 66, 0.2);
+        }
+
+        .sdg-btn.active {
+            background: #7cb342;
+            color: white;
+            box-shadow: 0 4px 12px rgba(124, 179, 66, 0.3);
+        }
+
+        .sdg-legend {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #000;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #7cb342;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #000;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        label .en {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: normal;
+            display: block;
+            margin-top: 4px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #7cb342;
+            box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .step-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #7cb342;
+            border-radius: 4px;
+        }
+
+        .step-item strong {
+            color: #7cb342;
+        }
+
+        .add-step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-step input {
+            flex: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #7cb342;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #558b2f;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #000;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .preview-box {
+            background: #f8f9fa;
+            border: 2px solid #7cb342;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #7cb342;
+            margin-bottom: 12px;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #000;
+            padding: 30px 20px;
+        }
+
+        .footer-text {
+            font-size: 0.9em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+
+        .footer-credit {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .footer-credit p {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .sdg-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        .success-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #7cb342;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .success-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sdg-description {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 標題 -->
+        <header>
+            <h1>🌍 SDG AI教學代理人設計器</h1>
+            <p>國中版本 | Junior High School Edition</p>
+        </header>
+
+        <!-- SDG快速選擇 -->
+        <div class="sdg-selector">
+            <h3>🎯 選擇聯合國永續發展目標 (SDGs)</h3>
+            <p>點擊下方按鈕選擇要強調的SDG目標，自動填入相關內容</p>
+            <div class="sdg-grid">
+                <button class="sdg-btn" onclick="loadSDGPreset(1)">
+                    <div><strong>SDG 1</strong></div>
+                    <div class="sdg-description">消除貧困</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(2)">
+                    <div><strong>SDG 2</strong></div>
+                    <div class="sdg-description">消除飢餓</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(3)">
+                    <div><strong>SDG 3</strong></div>
+                    <div class="sdg-description">良好健康</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(4)">
+                    <div><strong>SDG 4</strong></div>
+                    <div class="sdg-description">優質教育</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(5)">
+                    <div><strong>SDG 5</strong></div>
+                    <div class="sdg-description">性別平等</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(6)">
+                    <div><strong>SDG 6</strong></div>
+                    <div class="sdg-description">潔淨水資源</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(7)">
+                    <div><strong>SDG 7</strong></div>
+                    <div class="sdg-description">可負擔能源</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(8)">
+                    <div><strong>SDG 8</strong></div>
+                    <div class="sdg-description">經濟成長就業</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(9)">
+                    <div><strong>SDG 9</strong></div>
+                    <div class="sdg-description">產業創新基礎</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(10)">
+                    <div><strong>SDG 10</strong></div>
+                    <div class="sdg-description">減少不平等</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(11)">
+                    <div><strong>SDG 11</strong></div>
+                    <div class="sdg-description">永續城市</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(12)">
+                    <div><strong>SDG 12</strong></div>
+                    <div class="sdg-description">負責任消費</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(13)">
+                    <div><strong>SDG 13</strong></div>
+                    <div class="sdg-description">氣候行動</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(14)">
+                    <div><strong>SDG 14</strong></div>
+                    <div class="sdg-description">水下生物</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(15)">
+                    <div><strong>SDG 15</strong></div>
+                    <div class="sdg-description">陸上生物</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(16)">
+                    <div><strong>SDG 16</strong></div>
+                    <div class="sdg-description">和平正義機構</div>
+                </button>
+                <button class="sdg-btn" onclick="loadSDGPreset(17)">
+                    <div><strong>SDG 17</strong></div>
+                    <div class="sdg-description">夥伴關係</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 使用說明 -->
+        <div class="info-banner">
+            <strong>💡 使用步驟 | Usage Steps</strong>
+            <p><strong>第1步：</strong>選擇要強調的SDG目標</p>
+            <p><strong>第2步：</strong>填寫基本資訊，或自訂教學規則、工具和學習流程</p>
+            <p><strong>第3步：</strong>點擊「生成Prompt」預覽AI教學代理人的指令</p>
+            <p><strong>第4步：</strong>複製或下載Prompt到您選擇的AI工具（如Claude、ChatGPT等）</p>
+        </div>
+
+        <!-- 主要表單 -->
+        <div class="main-grid">
+            <!-- 左側：基本設定 -->
+            <div>
+                <!-- 基本設定 -->
+                <div class="section">
+                    <div class="section-title">⚙️ 基本設定 | Basic Settings</div>
+
+                    <!-- 選定的SDG -->
+                    <div class="form-group">
+                        <label>
+                            選定的SDG目標 <span class="en">Selected SDG Goal</span>
+                        </label>
+                        <input type="text" id="selectedSDG" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                    </div>
+
+                    <!-- 目標 -->
+                    <div class="form-group">
+                        <label>
+                            學習目標 <span class="en">Learning Objective</span>
+                        </label>
+                        <textarea id="objective" placeholder="例：幫助學生理解永續發展目標，思考個人與全球議題的連結"></textarea>
+                    </div>
+
+                    <!-- AI角色名稱 -->
+                    <div class="form-group">
+                        <label>
+                            AI角色名稱 <span class="en">AI Agent Name</span>
+                        </label>
+                        <input type="text" id="agentName" placeholder="例：永續發展引導員、全球公民教練">
+                    </div>
+
+                    <!-- 角色描述 -->
+                    <div class="form-group">
+                        <label>
+                            角色描述 <span class="en">Agent Description</span>
+                        </label>
+                        <textarea id="agentDesc" placeholder="例：一位具有國際視野和深厚永續發展知識的教練，能用青少年關心的故事和例子引導思考。"></textarea>
+                    </div>
+
+                    <!-- 教學主題 -->
+                    <div class="form-group">
+                        <label>
+                            教學主題 <span class="en">Teaching Theme</span>
+                        </label>
+                        <input type="text" id="theme" placeholder="例：氣候變遷、全球公平、永續消費">
+                    </div>
+
+                    <!-- 教學資源 -->
+                    <div class="form-group">
+                        <label>
+                            教學資源 <span class="en">Teaching Resources</span>
+                        </label>
+                        <input type="text" id="resources" placeholder="例：真實案例、影片、統計數據、時事新聞">
+                    </div>
+
+                    <!-- 上課時間 -->
+                    <div class="form-group">
+                        <label>
+                            上課時間 <span class="en">Duration</span>
+                        </label>
+                        <input type="text" id="duration" placeholder="例：25-35分鐘">
+                    </div>
+                </div>
+
+                <!-- 規則 -->
+                <div class="section">
+                    <div class="section-title">📋 規則 | Rules</div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule1" checked>
+                            以國際視野和同理心回應，尊重多元文化觀點
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule2" checked>
+                            避免道德優越感，鼓勵批判性思考而非說教
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule3" checked>
+                            連結學生的日常生活和全球議題
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule4" checked>
+                            鼓勵學生提出行動方案和個人承諾
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule5">
+                            融合台灣在地議題與全球永續發展
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule6">
+                            強調個人、社區、全球三個層面的改變
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule7">
+                            避免悲觀無力感，展現解決方案的可能性
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：學習流程 -->
+            <div>
+                <!-- 工具 -->
+                <div class="section">
+                    <div class="section-title">🛠️ 工具 | Tools</div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool1" checked>
+                            真實案例與故事分享
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool2">
+                            數據與統計圖表
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool3">
+                            思維導圖與系統思考
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool4">
+                            行動方案設計工作坊
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool5">
+                            同儕討論與觀點交換
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool6">
+                            個人承諾與行動清單
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 學習流程與步驟 -->
+                <div class="section">
+                    <div class="section-title">📚 學習流程 | Learning Flow</div>
+
+                    <div class="add-step">
+                        <input type="text" id="stepInput" placeholder="輸入步驟內容...">
+                        <button class="btn-primary" onclick="addStep()">新增</button>
+                    </div>
+
+                    <div id="stepList" class="step-list">
+                        <div class="step-item">
+                            <strong>Step 1:</strong> 開場：用引人入勝的事例或問題引起動機
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 2:</strong> 認識議題：協助學生理解此SDG的全球背景
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 3:</strong> 在地連結：引導思考台灣或身邊的相關例子
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 4:</strong> 行動思考：讓學生提出個人或集體可採取的行動
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 5:</strong> 承諾與反思：鼓勵學生做出小承諾或記錄想法
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary" onclick="clearSteps()">清空步驟</button>
+                </div>
+
+                <!-- 預覽 -->
+                <div class="section">
+                    <div class="section-title">👁️ 預覽 | Preview</div>
+
+                    <button class="btn-primary" onclick="generatePrompt()" style="width: 100%; margin-bottom: 15px;">
+                        生成 Prompt
+                    </button>
+
+                    <div class="preview-box">
+                        <div class="preview-title">生成的Prompt：</div>
+                        <div class="preview-content" id="preview">點擊「生成Prompt」以預覽...</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="copyPrompt()">複製</button>
+                        <button class="btn-secondary" onclick="downloadPrompt()">下載</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>Beta 版本 | Beta Version</strong><br>
+                SDG國中版本開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                最後更新：2025年11月14日 | Last updated: November 14, 2025
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-credit">
+                <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
+                <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div style="font-size: 0.8em; line-height: 1.8; color: #000; text-align: left; background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+                
+                <p style="margin-bottom: 10px;"><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+                <p style="margin-bottom: 10px;">如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+                <p style="margin-bottom: 15px;">本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+
+                <p style="margin-bottom: 10px;"><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+                <p style="margin-bottom: 10px;">If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.</p>
+                <p style="margin-bottom: 10px;">The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.</p>
+
+                <p style="margin-top: 15px; font-weight: 600;">Google雲端連結 | Google Drive Link: 由各場次研習提供，或寄信到團隊信箱由葉教授及團隊共同管理 | Provided by each workshop session, or email our team inbox</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功通知 -->
+    <div class="success-toast" id="successToast"></div>
+
+    <script>
+        let steps = [];
+        let currentSDG = null;
+
+        // 17個SDG的預設內容
+        const sdgPresets = {
+            1: {
+                name: 'SDG 1 消除貧困 | No Poverty',
+                objective: '幫助國中生理解全球貧困現象，思考教育、技能、就業對抗貧困的重要性，培養同理心和全球公民意識',
+                agentName: '公平發展倡議者',
+                agentDesc: '一位關心全球發展平等的教練，用鮮活的故事和數據幫助學生理解貧困的結構性原因，激發學生思考改變的可能性。',
+                theme: '全球貧困、教育機會、經濟公平',
+                resources: '聯合國貧困統計、真實社區案例、青年企業家故事',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule7']
+            },
+            2: {
+                name: 'SDG 2 消除飢餓 | Zero Hunger',
+                objective: '幫助國中生認識全球糧食不安全問題，理解農業、氣候、貿易對糧食的影響，思考食物浪費和永續農業',
+                agentName: '糧食正義推動者',
+                agentDesc: '一位對全球糧食議題有深入了解的導師，用台灣和全球的食物故事引導學生思考，鼓勵在地思考、全球行動。',
+                theme: '糧食安全、飢餓、永續農業、食物浪費',
+                resources: '全球飢餓報告、在地農業實例、食物供應鏈分析',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7']
+            },
+            3: {
+                name: 'SDG 3 良好健康 | Good Health and Well-being',
+                objective: '幫助國中生理解全球和台灣的健康不平等，思考心理健康、疾病預防、健康教育的重要性',
+                agentName: '健康生活教練',
+                agentDesc: '一位重視身心健康的教練，用青少年關心的議題（心理健康、運動、營養）連結全球健康不平等問題。',
+                theme: '健康不平等、心理健康、傳染病、預防保健',
+                resources: '健康統計數據、青少年心理健康故事、疾病預防案例',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            4: {
+                name: 'SDG 4 優質教育 | Quality Education',
+                objective: '幫助國中生思考教育的力量，理解全球教育機會的差異，反思自己的學習意義和對他人的責任',
+                agentName: '教育權益倡議者',
+                agentDesc: '一位相信教育改變生命的教練，用國內外教育成功故事激勵學生，思考如何幫助更多人獲得優質教育。',
+                theme: '教育機會、數位學習、教育平等、學習困難',
+                resources: '全球教育統計、青年教育改革案例、線上學習資源',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6']
+            },
+            5: {
+                name: 'SDG 5 性別平等 | Gender Equality',
+                objective: '幫助國中生理解全球性別不平等現象，思考教育、經濟、政治中的性別公平，反思自己的性別角色認知',
+                agentName: '性別平等倡議者',
+                agentDesc: '一位致力於性別平等的教練，用尊重多元的方式探討性別議題，鼓勵學生反思刻板印象，建立平等意識。',
+                theme: '性別平等、暴力防止、決策參與、教育機會',
+                resources: '性別統計數據、女性領導人故事、性別不平等案例',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule7']
+            },
+            6: {
+                name: 'SDG 6 潔淨水資源 | Clean Water and Sanitation',
+                objective: '幫助國中生認識全球和台灣的水資源問題，理解水污染、水短缺、衛生設施對人類和環境的影響',
+                agentName: '水資源守護者',
+                agentDesc: '一位關心水資源永續的教練，用台灣水文化和全球水危機的對比，引導學生思考節水行動。',
+                theme: '水資源短缺、水污染、衛生設施、節水行動',
+                resources: '台灣水資源現況、全球水危機案例、節水技術',
+                duration: '25-30分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule7']
+            },
+            7: {
+                name: 'SDG 7 可負擔能源 | Affordable and Clean Energy',
+                objective: '幫助國中生理解能源轉型的必要性，思考再生能源、能源效率、能源公平的挑戰和機會',
+                agentName: '能源轉型推動者',
+                agentDesc: '一位了解能源危機和解決方案的教練，用台灣的綠能政策和全球案例引導學生思考能源未來。',
+                theme: '可再生能源、能源效率、能源公平、淨零碳排',
+                resources: '能源統計數據、綠能技術案例、能源轉型故事',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7']
+            },
+            8: {
+                name: 'SDG 8 經濟成長就業 | Decent Work and Economic Growth',
+                objective: '幫助國中生理解就業和經濟發展的複雜性，思考勞動權益、工作安全、創業機會、工作與生活平衡',
+                agentName: '尊嚴工作推廣者',
+                agentDesc: '一位重視勞動人權和經濟永續的教練，用青年就業故事和企業社會責任案例引導學生思考未來職涯。',
+                theme: '就業機會、勞動權益、創業、工作安全、薪資公平',
+                resources: '就業統計、青年創業故事、勞工權益案例',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5']
+            },
+            9: {
+                name: 'SDG 9 產業創新基礎 | Industry, Innovation and Infrastructure',
+                objective: '幫助國中生認識科技創新對永續發展的重要性，思考台灣的產業轉型、基礎設施、創新應用',
+                agentName: '創新解決方案設計師',
+                agentDesc: '一位熱衷科技創新解決社會問題的教練，用台灣科技產業和新創案例啟發學生的創新思維。',
+                theme: '科技創新、基礎設施、產業轉型、新創應用',
+                resources: '台灣科技產業案例、新創故事、創新解決方案',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule7']
+            },
+            10: {
+                name: 'SDG 10 減少不平等 | Reduced Inequalities',
+                objective: '幫助國中生理解多維度的不平等問題（收入、性別、教育、機會），思考包容性和社會正義',
+                agentName: '社會公正倡議者',
+                agentDesc: '一位致力於消除不平等的教練，用結構性分析幫助學生理解不平等的根源，鼓勵包容性思維。',
+                theme: '收入不平等、機會差距、社會流動、包容性',
+                resources: '不平等統計數據、社會流動案例、包容政策案例',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7']
+            },
+            11: {
+                name: 'SDG 11 永續城市 | Sustainable Cities and Communities',
+                objective: '幫助國中生認識都市化挑戰，思考永續城市規劃、公共交通、綠地、社區建設，連結在地生活',
+                agentName: '永續城鎮設計師',
+                agentDesc: '一位關心都市永續發展的教練，用台灣城市案例和國際城市規劃引導學生思考理想社區。',
+                theme: '永續城市規劃、公共交通、綠地、社區安全、文化保存',
+                resources: '城市規劃案例、公共設施分析、社區改造故事',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6']
+            },
+            12: {
+                name: 'SDG 12 負責任消費 | Responsible Consumption and Production',
+                objective: '幫助國中生反思消費習慣和浪費問題，理解循環經濟、永續生產，建立責任消費意識',
+                agentName: '循環經濟推動者',
+                agentDesc: '一位提倡永續消費和循環經濟的教練，用青少年的購物習慣連結全球資源耗盡和污染問題。',
+                theme: '負責任消費、食物浪費、循環經濟、綠色生產',
+                resources: '消費統計、循環經濟案例、廢棄物管理方案',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule7']
+            },
+            13: {
+                name: 'SDG 13 氣候行動 | Climate Action',
+                objective: '幫助國中生理解氣候變遷的科學和影響，思考個人和社會的減緩與適應行動，建立氣候責任感',
+                agentName: '氣候行動領導者',
+                agentDesc: '一位了解氣候科學和解決方案的教練，用台灣和全球的氣候衝擊故事激勵學生的行動力。',
+                theme: '氣候變遷、減碳行動、災害適應、能源轉型',
+                resources: '氣候科學報告、極端氣候事件、減碳案例',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7']
+            },
+            14: {
+                name: 'SDG 14 水下生物 | Life Below Water',
+                objective: '幫助國中生認識海洋生態危機，理解過度捕撈、海洋污染、珊瑚白化，思考海洋保護行動',
+                agentName: '海洋保護倡議者',
+                agentDesc: '一位熱愛海洋的教練，用台灣沿海生態和全球海洋危機的連結，引導學生思考海洋保護責任。',
+                theme: '海洋污染、過度捕撈、珊瑚保育、海洋生物多樣性',
+                resources: '海洋生態資料、漁業統計、海洋保護區案例',
+                duration: '25-30分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule7']
+            },
+            15: {
+                name: 'SDG 15 陸上生物 | Life on Land',
+                objective: '幫助國中生認識陸上生態危機，理解森林砍伐、物種滅絕、沙漠化，思考生物多樣性保護',
+                agentName: '生物多樣性守護者',
+                agentDesc: '一位致力於陸上生態保護的教練，用台灣特有種和全球物種滅絕危機連結學生的環保意識。',
+                theme: '森林保育、物種保護、生物多樣性、生態復育',
+                resources: '生物多樣性資料、森林統計、物種保護案例',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7']
+            },
+            16: {
+                name: 'SDG 16 和平正義機構 | Peace, Justice and Strong Institutions',
+                objective: '幫助國中生理解衝突、暴力、腐敗對社會的傷害，思考法治、人權、民主制度的重要性',
+                agentName: '和平正義推廣者',
+                agentDesc: '一位相信制度力量和人權的教練，用和平建構案例和民主價值引導學生思考個人責任。',
+                theme: '和平建構、人權保護、法治制度、反腐敗、民主參與',
+                resources: '衝突統計、和平案例、人權保護實例、民主制度',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6']
+            },
+            17: {
+                name: 'SDG 17 夥伴關係 | Partnerships for the Goals',
+                objective: '幫助國中生理解永續發展需要全球合作，思考多方利益關係人合作、資源共享、知識交流',
+                agentName: '全球夥伴關係協調者',
+                agentDesc: '一位相信集體力量的教練，用國際合作成功案例和台灣的國際貢獻引導學生思考夥伴精神。',
+                theme: '全球夥伴關係、資源共享、知識交流、多方合作',
+                resources: '國際合作案例、SDG進展報告、跨界合作故事',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6']
+            }
+        };
+
+        function loadSDGPreset(sdgNumber) {
+            const preset = sdgPresets[sdgNumber];
+            if (!preset) return;
+
+            // 填寫基本信息
+            document.getElementById('selectedSDG').value = preset.name;
+            document.getElementById('objective').value = preset.objective;
+            document.getElementById('agentName').value = preset.agentName;
+            document.getElementById('agentDesc').value = preset.agentDesc;
+            document.getElementById('theme').value = preset.theme;
+            document.getElementById('resources').value = preset.resources;
+            document.getElementById('duration').value = preset.duration;
+
+            // 重置規則複選框
+            document.querySelectorAll('.checkbox-item input[id^="rule"]').forEach(checkbox => {
+                checkbox.checked = preset.rules.includes(checkbox.id);
+            });
+
+            // 預設工具
+            document.querySelectorAll('.checkbox-item input[id^="tool"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+
+            // 載入預設步驟
+            steps = [
+                '開場：用引人入勝的事例或問題引起動機',
+                '認識議題：協助學生理解此SDG的全球背景',
+                '在地連結：引導思考台灣或身邊的相關例子',
+                '行動思考：讓學生提出個人或集體可採取的行動',
+                '承諾與反思：鼓勵學生做出小承諾或記錄想法'
+            ];
+            renderSteps();
+
+            // 更新按鈕狀態
+            document.querySelectorAll('.sdg-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            currentSDG = sdgNumber;
+
+            // 顯示成功提示
+            showToast(`✅ 已載入 SDG ${sdgNumber} 預設內容！`);
+        }
+
+        function addStep() {
+            const input = document.getElementById('stepInput');
+            if (input.value.trim()) {
+                steps.push(input.value);
+                renderSteps();
+                input.value = '';
+            }
+        }
+
+        function renderSteps() {
+            const list = document.getElementById('stepList');
+            list.innerHTML = '';
+            steps.forEach((step, index) => {
+                const div = document.createElement('div');
+                div.className = 'step-item';
+                div.innerHTML = `
+                    <strong>Step ${index + 1}:</strong> ${step}
+                    <button class="btn-secondary" style="width: 80px; padding: 5px; font-size: 0.8em; margin-top: 8px;" onclick="removeStep(${index})">刪除</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function removeStep(index) {
+            steps.splice(index, 1);
+            renderSteps();
+        }
+
+        function clearSteps() {
+            steps = [];
+            renderSteps();
+        }
+
+        function generatePrompt() {
+            const selectedSDG = document.getElementById('selectedSDG').value;
+            const objective = document.getElementById('objective').value;
+            const agentName = document.getElementById('agentName').value || '教學助手';
+            const agentDesc = document.getElementById('agentDesc').value;
+            const theme = document.getElementById('theme').value;
+            const resources = document.getElementById('resources').value;
+            const duration = document.getElementById('duration').value;
+
+            let rulesText = '規則：\n';
+            if (document.getElementById('rule1').checked) rulesText += '1. 以國際視野和同理心回應，尊重多元文化觀點\n';
+            if (document.getElementById('rule2').checked) rulesText += '2. 避免道德優越感，鼓勵批判性思考而非說教\n';
+            if (document.getElementById('rule3').checked) rulesText += '3. 連結學生的日常生活和全球議題\n';
+            if (document.getElementById('rule4').checked) rulesText += '4. 鼓勵學生提出行動方案和個人承諾\n';
+            if (document.getElementById('rule5').checked) rulesText += '5. 融合台灣在地議題與全球永續發展\n';
+            if (document.getElementById('rule6').checked) rulesText += '6. 強調個人、社區、全球三個層面的改變\n';
+            if (document.getElementById('rule7').checked) rulesText += '7. 避免悲觀無力感，展現解決方案的可能性\n';
+
+            let toolsText = '教學工具與方法：\n';
+            if (document.getElementById('tool1').checked) toolsText += '- 真實案例與故事分享\n';
+            if (document.getElementById('tool2').checked) toolsText += '- 數據與統計圖表\n';
+            if (document.getElementById('tool3').checked) toolsText += '- 思維導圖與系統思考\n';
+            if (document.getElementById('tool4').checked) toolsText += '- 行動方案設計工作坊\n';
+            if (document.getElementById('tool5').checked) toolsText += '- 同儕討論與觀點交換\n';
+            if (document.getElementById('tool6').checked) toolsText += '- 個人承諾與行動清單\n';
+
+            let stepsText = '學習流程與步驟：\n';
+            steps.forEach((step, index) => {
+                stepsText += `Step ${index + 1}: ${step}\n`;
+            });
+
+            const prompt = `
+【SDG AI教學代理人設計 - 國中版本】
+
+【目標與角色】
+永續發展目標：${selectedSDG}
+學習目標：${objective}
+教學主題：${theme}
+AI角色：${agentName}
+${agentDesc ? `角色描述：${agentDesc}` : ''}
+
+這是一個幫助國中生理解並行動於永續發展目標的AI教學代理人，旨在通過對話、批判性思考和行動設計促進全球公民意識。請完全使用繁體中文進行互動。
+
+【教學背景】
+學習對象：國中生（年齡13-15歲）
+教學資源：${resources}
+預計時間：${duration}
+
+【${rulesText}】
+
+【${toolsText}】
+
+【${stepsText}】
+
+【教學方式】
+- 每次進行一個步驟，等待學生回應後再進行下一步
+- 用開放式問題引導學生思考，避免直接給答案
+- 當學生提出行動想法時，幫助他們具體化和可實踐化
+- 根據學生的反應動態調整，確保參與度和深度思考
+- 定期總結重點，確保學習目標達成
+
+請根據上述設定進行教學。
+            `;
+
+            document.getElementById('preview').textContent = prompt.trim();
+            showToast('✅ Prompt已生成！');
+        }
+
+        function copyPrompt() {
+            const preview = document.getElementById('preview');
+            navigator.clipboard.writeText(preview.textContent).then(() => {
+                showToast('✅ 已複製到剪貼板！');
+            });
+        }
+
+        function downloadPrompt() {
+            const preview = document.getElementById('preview');
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(preview.textContent));
+            element.setAttribute('download', 'SDG_AI教學_國中版.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showToast('✅ 已下載Prompt！');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 初始化
+        window.addEventListener('load', () => {
+            renderSteps();
+        });
+    </script>
+</body>
+</html>
