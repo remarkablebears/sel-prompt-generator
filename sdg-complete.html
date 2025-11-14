@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDG完整版 Prompt生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: linear-gradient(135deg, #00a651 0%, #004d26 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .form-section, .preview-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #00a651;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #00a651;
+            border-bottom-color: #00a651;
+        }
+
+        .tab-btn:hover {
+            color: #00a651;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        label .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #00a651;
+            box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-item, .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .hint {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button.generate, button.download, button.copy {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button.generate {
+            background: #00a651;
+            color: white;
+        }
+
+        button.generate:hover {
+            background: #008040;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 166, 81, 0.4);
+        }
+
+        button.copy {
+            background: #f39c12;
+            color: white;
+        }
+
+        button.copy:hover {
+            background: #e67e22;
+        }
+
+        button.download {
+            background: #3498db;
+            color: white;
+        }
+
+        button.download:hover {
+            background: #2980b9;
+        }
+
+        .preview-content {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            min-height: 400px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            color: #333;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .preview-empty {
+            color: #999;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .copy-feedback {
+            display: none;
+            padding: 12px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .copy-feedback.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #00a651;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #2e7d32;
+        }
+
+        .sdg-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .sdg-item {
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .sdg-item label {
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .sdg-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 SDG完整版 Prompt生成器</h1>
+            <p>聯合國17個永續發展目標 - 英語教學應用</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 左側：表單 -->
+            <div class="form-section">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('lesson')">📚 課程設計</button>
+                    <button class="tab-btn" onclick="switchTab('activity')">🎯 活動設計</button>
+                    <button class="tab-btn" onclick="switchTab('assessment')">📊 評量設計</button>
+                </div>
+
+                <!-- 課程設計 -->
+                <div id="lesson" class="tab-content active">
+                    <h2 class="section-title">SDG課程設計</h2>
+
+                    <div class="info-box">
+                        💡 選擇SDG目標，幫助你的英語課程連結全球永續議題
+                    </div>
+
+                    <div class="form-group">
+                        <label>學校/班級名稱 <span class="required">*</span></label>
+                        <input type="text" id="lesson-school" placeholder="例：台中市東山高中國中部" onchange="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>教學年級 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="grade" value="7" onchange="updatePreview()"> 國中七年級
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="grade" value="8" onchange="updatePreview()"> 國中八年級
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="grade" value="9" onchange="updatePreview()"> 國中九年級
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>單元主題 <span class="required">*</span></label>
+                        <input type="text" id="lesson-unit" placeholder="例：全球教育、氣候變遷" onchange="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>選擇SDG目標 <span class="required">*</span></label>
+                        <div class="sdg-grid">
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 1無貧窮" onchange="updatePreview()"> <strong>1</strong> 無貧窮
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 2零飢餓" onchange="updatePreview()"> <strong>2</strong> 零飢餓
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 3良好健康" onchange="updatePreview()"> <strong>3</strong> 良好健康
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 4優質教育" onchange="updatePreview()"> <strong>4</strong> 優質教育
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 5性別平等" onchange="updatePreview()"> <strong>5</strong> 性別平等
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 6清潔飲水" onchange="updatePreview()"> <strong>6</strong> 清潔飲水
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 7潔淨能源" onchange="updatePreview()"> <strong>7</strong> 潔淨能源
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 8體面工作" onchange="updatePreview()"> <strong>8</strong> 體面工作
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 9產業創新" onchange="updatePreview()"> <strong>9</strong> 產業創新
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 10減少不平等" onchange="updatePreview()"> <strong>10</strong> 減少不平等
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 11永續城市" onchange="updatePreview()"> <strong>11</strong> 永續城市
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 12責任消費" onchange="updatePreview()"> <strong>12</strong> 責任消費
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 13氣候行動" onchange="updatePreview()"> <strong>13</strong> 氣候行動
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 14海洋生態" onchange="updatePreview()"> <strong>14</strong> 海洋生態
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 15陸地生態" onchange="updatePreview()"> <strong>15</strong> 陸地生態
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 16和平正義" onchange="updatePreview()"> <strong>16</strong> 和平正義
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="sdg" value="SDG 17夥伴關係" onchange="updatePreview()"> <strong>17</strong> 夥伴關係
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>教學時長</label>
+                        <select id="lesson-time" onchange="updatePreview()">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="45分鐘">45分鐘單堂課</option>
+                            <option value="90分鐘">90分鐘雙堂課</option>
+                            <option value="一週">一週（多堂課）</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>特殊考量</label>
+                        <textarea id="lesson-notes" placeholder="例：班級背景、教學困難等" onchange="updatePreview()"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="generate" onclick="generateLesson()">生成課程Prompt</button>
+                    </div>
+                </div>
+
+                <!-- 活動設計 -->
+                <div id="activity" class="tab-content">
+                    <h2 class="section-title">SDG教學活動設計</h2>
+
+                    <div class="info-box">
+                        💡 設計具體的SDG融合教學活動
+                    </div>
+
+                    <div class="form-group">
+                        <label>活動名稱 <span class="required">*</span></label>
+                        <input type="text" id="activity-name" placeholder="例：全球貧窮議題小組討論" onchange="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>年級 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="a-grade" value="7" onchange="updatePreview()"> 國中七年級
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="a-grade" value="8" onchange="updatePreview()"> 國中八年級
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="a-grade" value="9" onchange="updatePreview()"> 國中九年級
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>選擇相關SDG目標 <span class="required">*</span></label>
+                        <div class="sdg-grid">
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 1無貧窮" onchange="updatePreview()"> <strong>1</strong> 無貧窮
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 2零飢餓" onchange="updatePreview()"> <strong>2</strong> 零飢餓
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 3良好健康" onchange="updatePreview()"> <strong>3</strong> 良好健康
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 4優質教育" onchange="updatePreview()"> <strong>4</strong> 優質教育
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 5性別平等" onchange="updatePreview()"> <strong>5</strong> 性別平等
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 6清潔飲水" onchange="updatePreview()"> <strong>6</strong> 清潔飲水
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 7潔淨能源" onchange="updatePreview()"> <strong>7</strong> 潔淨能源
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 8體面工作" onchange="updatePreview()"> <strong>8</strong> 體面工作
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 9產業創新" onchange="updatePreview()"> <strong>9</strong> 產業創新
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 10減少不平等" onchange="updatePreview()"> <strong>10</strong> 減少不平等
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 11永續城市" onchange="updatePreview()"> <strong>11</strong> 永續城市
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 12責任消費" onchange="updatePreview()"> <strong>12</strong> 責任消費
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 13氣候行動" onchange="updatePreview()"> <strong>13</strong> 氣候行動
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 14海洋生態" onchange="updatePreview()"> <strong>14</strong> 海洋生態
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 15陸地生態" onchange="updatePreview()"> <strong>15</strong> 陸地生態
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 16和平正義" onchange="updatePreview()"> <strong>16</strong> 和平正義
+                            </label>
+                            <label class="checkbox-item sdg-item">
+                                <input type="checkbox" name="a-sdg" value="SDG 17夥伴關係" onchange="updatePreview()"> <strong>17</strong> 夥伴關係
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>活動類型 <span class="required">*</span></label>
+                        <select id="activity-type" onchange="updatePreview()">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="討論">討論</option>
+                            <option value="專案">小組專案</option>
+                            <option value="研究">研究報告</option>
+                            <option value="口頭發表">口頭發表</option>
+                            <option value="創意製作">創意製作</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>英語語言目標</label>
+                        <textarea id="activity-language" placeholder="例：能用英文表達觀點、進行辯論等" onchange="updatePreview()"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="generate" onclick="generateActivity()">生成活動Prompt</button>
+                    </div>
+                </div>
+
+                <!-- 評量設計 -->
+                <div id="assessment" class="tab-content">
+                    <h2 class="section-title">SDG評量設計</h2>
+
+                    <div class="info-box">
+                        💡 評量學生對SDG的理解與行動能力
+                    </div>
+
+                    <div class="form-group">
+                        <label>評量名稱 <span class="required">*</span></label>
+                        <input type="text" id="assess-name" placeholder="例：SDG專案評量" onchange="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>年級 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="as-grade" value="7" onchange="updatePreview()"> 國中七年級
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="as-grade" value="8" onchange="updatePreview()"> 國中八年級
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="as-grade" value="9" onchange="updatePreview()"> 國中九年級
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>涵蓋的SDG目標 <span class="required">*</span></label>
+                        <input type="text" id="assess-sdg" placeholder="例：SDG 5性別平等、SDG 13氣候行動" onchange="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>評量方式 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="assess-type" value="形成性評量" onchange="updatePreview()"> 形成性評量（進行中）
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="assess-type" value="總結性評量" onchange="updatePreview()"> 總結性評量（結束時）
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="assess-type" value="兩者兼有" onchange="updatePreview()"> 兩者兼有
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>學習目標</label>
+                        <textarea id="assess-goals" placeholder="例：學生能認識全球永續議題、能用英文討論SDG相關議題等" onchange="updatePreview()"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="generate" onclick="generateAssessment()">生成評量Prompt</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：預覽 -->
+            <div class="preview-section">
+                <h2 class="section-title">📋 Prompt預覽</h2>
+                
+                <div class="copy-feedback" id="copyFeedback">✅ 已複製到剪貼板！</div>
+
+                <div class="preview-content" id="preview">
+                    <div class="preview-empty">填寫左側表單後，生成的Prompt會在此顯示</div>
+                </div>
+
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="copy" onclick="copyToClipboard()">📋 複製</button>
+                    <button class="download" onclick="downloadPrompt()">📥 下載</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPrompt = '';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+            
+            document.getElementById('preview').innerHTML = '<div class="preview-empty">填寫左側表單後，生成的Prompt會在此顯示</div>';
+            currentPrompt = '';
+        }
+
+        function updatePreview() {}
+
+        function getSelectedValues(name) {
+            const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
+            return Array.from(checked).map(el => el.value);
+        }
+
+        function generateLesson() {
+            const school = document.getElementById('lesson-school').value;
+            const grade = document.querySelector('input[name="grade"]:checked')?.value;
+            const unit = document.getElementById('lesson-unit').value;
+            const sdgs = getSelectedValues('sdg');
+            const time = document.getElementById('lesson-time').value;
+            const notes = document.getElementById('lesson-notes').value;
+
+            if (!school || !grade || !unit || sdgs.length === 0) {
+                alert('請填寫所有必填欄位');
+                return;
+            }
+
+            const prompt = `【SDG融合英語課程設計】
+
+學校背景：${school}
+教學年級：國中${grade}年級
+單元主題：${unit}
+教學時長：${time || '待定'}
+
+涵蓋的SDG目標：
+${sdgs.map(s => `• ${s}`).join('\n')}
+
+${notes ? `特殊考量：${notes}` : ''}
+
+請幫我設計一個融合SDG的英語課程：
+
+1. 課程整體架構
+   - 如何在此單元中融入選定的SDG目標
+   - 與聯合國永續發展議題的連結
+
+2. 教學活動設計（3-5個）
+   - 每個活動的目標（英語能力 + SDG認知）
+   - 具體的教學步驟與時間配置
+   - 所需教材
+
+3. 語言學習目標
+   - 字彙範疇
+   - 句型結構
+   - 聽說讀寫技能
+
+4. 評量方式
+   - 形成性評量
+   - 總結性評量
+
+5. 跨域連結建議
+   - 與其他科目的整合可能`;
+
+            currentPrompt = prompt;
+            displayPrompt(prompt);
+        }
+
+        function generateActivity() {
+            const name = document.getElementById('activity-name').value;
+            const grade = document.querySelector('input[name="a-grade"]:checked')?.value;
+            const sdgs = getSelectedValues('a-sdg');
+            const type = document.getElementById('activity-type').value;
+            const language = document.getElementById('activity-language').value;
+
+            if (!name || !grade || sdgs.length === 0 || !type) {
+                alert('請填寫所有必填欄位');
+                return;
+            }
+
+            const prompt = `【SDG教學活動設計】
+
+活動名稱：${name}
+年級：國中${grade}年級
+活動類型：${type}
+相關SDG目標：${sdgs.join('、')}
+${language ? `英語語言目標：${language}` : ''}
+
+請設計一個詳細的SDG融合教學活動：
+
+1. 活動概述
+   - 活動目標（認知、技能、態度）
+   - 預期學生學習成果
+
+2. 完整的活動流程
+   - 暖身/導入（時間）
+   - 主要活動（時間）
+   - 收束/反思（時間）
+   - 詳細的課堂對話框架
+
+3. 所需資源與教材
+   - 影片、文章、圖片
+   - 物品準備
+   - 線上工具
+
+4. 英語學習整合
+   - 關鍵字彙與表達
+   - 語言結構教學重點
+
+5. 差異化教學建議
+   - 進度快的學生
+   - 需要支援的學生
+
+6. 可能的變通方案
+   - 線上教學版本
+   - 戶外教學版本`;
+
+            currentPrompt = prompt;
+            displayPrompt(prompt);
+        }
+
+        function generateAssessment() {
+            const name = document.getElementById('assess-name').value;
+            const grade = document.querySelector('input[name="as-grade"]:checked')?.value;
+            const sdgs = document.getElementById('assess-sdg').value;
+            const type = document.querySelector('input[name="assess-type"]:checked')?.value;
+            const goals = document.getElementById('assess-goals').value;
+
+            if (!name || !grade || !sdgs || !type) {
+                alert('請填寫所有必填欄位');
+                return;
+            }
+
+            const prompt = `【SDG導向的評量設計】
+
+評量名稱：${name}
+年級：國中${grade}年級
+涵蓋SDG目標：${sdgs}
+評量性質：${type}
+${goals ? `學習目標：${goals}` : ''}
+
+請協助設計評量工具：
+
+1. 評量架構
+   - 評量目標
+   - 對齊的SDG目標與學習指標
+
+2. 形成性評量（進行中）
+   - 觀察重點與檢核項目
+   - 自評表設計
+   - 同儕評估表
+
+3. 總結性評量（結束時）
+   - 任務形式（發表、報告、創作等）
+   - 評分規準與分數配置
+   - 例行作品分析
+
+4. 評量工具
+   - 完整的評分表/檢核表
+   - 提示語與範例
+   - 中英雙語呈現
+
+5. 資料蒐集與記錄
+   - 學生成長檔案建議
+   - 進度追蹤方式
+
+6. 反饋策略
+   - 如何給予建設性回饋
+   - 促進學生反思的問題`;
+
+            currentPrompt = prompt;
+            displayPrompt(prompt);
+        }
+
+        function displayPrompt(prompt) {
+            const previewDiv = document.getElementById('preview');
+            previewDiv.textContent = prompt;
+        }
+
+        function copyToClipboard() {
+            if (!currentPrompt) {
+                alert('請先生成Prompt');
+                return;
+            }
+
+            navigator.clipboard.writeText(currentPrompt).then(() => {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                alert('複製失敗，請手動複製');
+            });
+        }
+
+        function downloadPrompt() {
+            if (!currentPrompt) {
+                alert('請先生成Prompt');
+                return;
+            }
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(currentPrompt));
+            element.setAttribute('download', 'SDG_Prompt_' + new Date().getTime() + '.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
