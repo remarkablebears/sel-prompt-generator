@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDG AI教學代理人設計器 | SDG AI Teaching Agent Designer</title>
+    <title>SEL AI教學代理人設計器（國中版）| SEL AI Teaching Agent Designer for Junior High</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -43,8 +43,8 @@
 
         /* 使用說明 Banner */
         .info-banner {
-            background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(66, 165, 245, 0.1) 100%);
-            border-left: 4px solid #1976d2;
+            background: linear-gradient(135deg, rgba(56, 142, 60, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%);
+            border-left: 4px solid #388e3c;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 30px;
@@ -65,8 +65,62 @@
 
         .info-banner .divider {
             height: 1px;
-            background: rgba(21, 101, 192, 0.2);
+            background: rgba(56, 142, 60, 0.2);
             margin: 15px 0;
+        }
+
+        /* 年級快速選擇區 */
+        .grade-selector {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.15) 100%);
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .grade-selector h3 {
+            color: #388e3c;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .grade-selector p {
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .grade-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .grade-btn {
+            padding: 12px 24px;
+            border: 2px solid #4caf50;
+            background: white;
+            color: #388e3c;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+
+        .grade-btn:hover {
+            background: #e8f5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+
+        .grade-btn.active {
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         }
 
         .main-grid {
@@ -87,7 +141,7 @@
             color: #000;
             margin-bottom: 20px;
             padding-bottom: 12px;
-            border-bottom: 3px solid #1976d2;
+            border-bottom: 3px solid #4caf50;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -129,8 +183,8 @@
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: #1976d2;
-            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
         textarea {
@@ -156,40 +210,6 @@
             cursor: pointer;
         }
 
-        .sdg-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-        }
-
-        .sdg-option {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-        }
-
-        .sdg-option:hover {
-            border-color: #1976d2;
-            background: #f0f7ff;
-        }
-
-        .sdg-option input {
-            display: none;
-        }
-
-        .sdg-option input:checked ~ span {
-            color: #1976d2;
-            font-weight: bold;
-        }
-
-        .sdg-option input:checked {
-            display: block;
-        }
-
         .step-list {
             background: #f8f9fa;
             border-radius: 8px;
@@ -201,12 +221,12 @@
             margin-bottom: 12px;
             padding: 10px;
             background: white;
-            border-left: 4px solid #1976d2;
+            border-left: 4px solid #4caf50;
             border-radius: 4px;
         }
 
         .step-item strong {
-            color: #1976d2;
+            color: #4caf50;
         }
 
         .add-step {
@@ -229,12 +249,12 @@
         }
 
         .btn-primary {
-            background: #1976d2;
+            background: #4caf50;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #1565c0;
+            background: #388e3c;
             transform: translateY(-2px);
         }
 
@@ -249,7 +269,7 @@
 
         .preview-box {
             background: #f8f9fa;
-            border: 2px solid #1976d2;
+            border: 2px solid #4caf50;
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
@@ -257,7 +277,7 @@
 
         .preview-title {
             font-weight: 600;
-            color: #1976d2;
+            color: #4caf50;
             margin-bottom: 12px;
         }
 
@@ -268,58 +288,48 @@
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 0.9em;
             line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
-            max-height: 300px;
-            overflow-y: auto;
-            color: #000;
         }
 
         .button-group {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .button-group button {
             flex: 1;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #1976d2;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         .footer {
+            margin-top: 50px;
             text-align: center;
             color: #000;
-            margin-top: 80px;
-            padding-top: 30px;
-            border-top: 1px solid #1976d2;
+            padding: 30px 20px;
         }
 
         .footer-text {
-            margin-bottom: 12px;
-            line-height: 1.8;
             font-size: 0.9em;
+            line-height: 1.8;
+            margin-bottom: 15px;
         }
 
         .footer-divider {
             height: 1px;
-            background: #1976d2;
+            background: #ddd;
             margin: 20px 0;
         }
 
         .footer-credit {
             font-size: 0.85em;
-            opacity: 0.8;
+            color: #666;
+        }
+
+        .footer-credit p {
+            margin-bottom: 8px;
         }
 
         @media (max-width: 1024px) {
@@ -327,126 +337,129 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .success-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .success-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .preset-indicator {
+            display: inline-block;
+            background: #c8e6c9;
+            color: #388e3c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="index.html" class="back-link">← 返回主頁 | Back to Home</a>
-
+        <!-- 標題 -->
         <header>
-            <h1>🌍 SDG AI教學代理人設計器</h1>
-            <p>SDG AI Teaching Agent Designer</p>
-            <p style="font-size: 0.9em; margin-top: 10px;">永續發展 | Sustainable Development Goals</p>
+            <h1>🌱 SEL AI教學代理人設計器</h1>
+            <p>國中版本 | Junior High School Edition</p>
         </header>
+
+        <!-- 年級快速選擇 -->
+        <div class="grade-selector">
+            <h3>📚 選擇年級快速載入預設內容</h3>
+            <p>點擊下方按鈕自動填入該年級的教學目標、規則和流程建議</p>
+            <div class="grade-buttons">
+                <button class="grade-btn" onclick="loadGradePreset('7')">七年級</button>
+                <button class="grade-btn" onclick="loadGradePreset('8')">八年級</button>
+                <button class="grade-btn" onclick="loadGradePreset('9')">九年級</button>
+            </div>
+        </div>
 
         <!-- 使用說明 -->
         <div class="info-banner">
-            <strong>💡 工具使用說明 | Tool Instructions</strong>
-            
-            <p><strong>中文：</strong>此工具主要為幫助英語老師、EMI老師、CLIL老師熟悉AI提示（Prompt）的模板。熟悉後，教師不一定要使用本介面，亦可自行組合操作，並根據教師專業知能進行調整。</p>
-            
-            <div class="divider"></div>
-            
-            <p><strong>English:</strong> This tool is designed to help English teachers, EMI teachers, and CLIL teachers familiarize themselves with AI prompt templates. After becoming familiar with the templates, teachers are not required to use this interface; they may also combine and create their own prompts according to their professional expertise and classroom needs.</p>
+            <strong>💡 使用步驟 | Usage Steps</strong>
+            <p><strong>第1步：</strong>選擇年級快速載入預設內容，或直接填寫基本資訊</p>
+            <p><strong>第2步：</strong>自訂教學規則、工具和學習流程（如需要）</p>
+            <p><strong>第3步：</strong>點擊「生成Prompt」預覽AI教學代理人的指令</p>
+            <p><strong>第4步：</strong>複製或下載Prompt到您選擇的AI工具（如Claude、ChatGPT等）</p>
         </div>
 
+        <!-- 主要表單 -->
         <div class="main-grid">
-            <!-- 左側：輸入表單 -->
+            <!-- 左側：基本設定 -->
             <div>
-                <!-- 目標與角色 -->
+                <!-- 基本設定 -->
                 <div class="section">
-                    <div class="section-title">🎯 目標與角色 | Target & Role</div>
+                    <div class="section-title">⚙️ 基本設定 | Basic Settings</div>
 
+                    <!-- 目標 -->
                     <div class="form-group">
                         <label>
-                            學習目標
-                            <span class="en">Learning Objective</span>
+                            學習目標 <span class="en">Learning Objective</span>
                         </label>
-                        <textarea id="objective" placeholder="例：幫助學生認識全球永續發展議題並思考解決方案"></textarea>
+                        <textarea id="objective" placeholder="例：幫助學生識別和管理自己的情緒，學習尊重他人的多元想法"></textarea>
                     </div>
 
+                    <!-- AI角色名稱 -->
                     <div class="form-group">
                         <label>
-                            AI角色名稱
-                            <span class="en">AI Agent Name</span>
+                            AI角色名稱 <span class="en">AI Agent Name</span>
                         </label>
-                        <input type="text" id="agentName" placeholder="例：地球守護者" value="地球守護者">
+                        <input type="text" id="agentName" placeholder="例：心靈引導員、情感教練">
                     </div>
 
+                    <!-- 角色描述 -->
                     <div class="form-group">
                         <label>
-                            AI角色描述
-                            <span class="en">AI Agent Description</span>
+                            角色描述 <span class="en">Agent Description</span>
                         </label>
-                        <textarea id="agentDesc" placeholder="例：一個專注於全球永續議題、鼓勵批判性思考的教學助手"></textarea>
-                    </div>
-                </div>
-
-                <!-- 環境與內容 -->
-                <div class="section">
-                    <div class="section-title">🏫 環境與內容 | Environment & Content</div>
-
-                    <div class="form-group">
-                        <label>
-                            學習對象
-                            <span class="en">Target Learners</span>
-                        </label>
-                        <select id="targetGrade">
-                            <option value="">-- 請選擇 --</option>
-                            <option value="小學1-3年級">小學1-3年級</option>
-                            <option value="小學4-6年級">小學4-6年級</option>
-                            <option value="國中7-9年級">國中7-9年級</option>
-                            <option value="高中">高中</option>
-                        </select>
+                        <textarea id="agentDesc" placeholder="例：一位具有溫暖、同理心的情感教練，擅長用幽默和鼓勵的方式引導青少年。"></textarea>
                     </div>
 
+                    <!-- 教學主題 -->
                     <div class="form-group">
                         <label>
-                            SDG目標
-                            <span class="en">SDG Goals</span>
+                            教學主題 <span class="en">Teaching Theme</span>
                         </label>
-                        <div class="sdg-selector">
-                            <label class="sdg-option">
-                                <input type="checkbox" name="sdg" value="SDG 1 無貧窮">
-                                <span>🎯 SDG 1<br>無貧窮</span>
-                            </label>
-                            <label class="sdg-option">
-                                <input type="checkbox" name="sdg" value="SDG 2 零飢餓">
-                                <span>🍽️ SDG 2<br>零飢餓</span>
-                            </label>
-                            <label class="sdg-option">
-                                <input type="checkbox" name="sdg" value="SDG 3 良好健康">
-                                <span>💚 SDG 3<br>良好健康</span>
-                            </label>
-                            <label class="sdg-option">
-                                <input type="checkbox" name="sdg" value="SDG 4 優質教育">
-                                <span>📚 SDG 4<br>優質教育</span>
-                            </label>
-                            <label class="sdg-option">
-                                <input type="checkbox" name="sdg" value="SDG 5 性別平等">
-                                <span>⚖️ SDG 5<br>性別平等</span>
-                            </label>
-                            <label class="sdg-option">
-                                <input type="checkbox" name="sdg" value="SDG 13 氣候行動">
-                                <span>🌍 SDG 13<br>氣候行動</span>
-                            </label>
-                        </div>
+                        <input type="text" id="theme" placeholder="例：情緒管理、同理心、社交技巧、衝突解決">
                     </div>
 
+                    <!-- 教學資源 -->
                     <div class="form-group">
                         <label>
-                            教學資源
-                            <span class="en">Teaching Resources</span>
+                            教學資源 <span class="en">Teaching Resources</span>
                         </label>
-                        <textarea id="resources" placeholder="例：影片、新聞文章、統計資料、實踐案例"></textarea>
+                        <input type="text" id="resources" placeholder="例：情境案例、小故事、角色扮演、討論問題">
                     </div>
 
+                    <!-- 上課時間 -->
                     <div class="form-group">
                         <label>
-                            教學時間
-                            <span class="en">Duration</span>
+                            上課時間 <span class="en">Duration</span>
                         </label>
-                        <input type="text" id="duration" placeholder="例：45分鐘">
+                        <input type="text" id="duration" placeholder="例：20-30分鐘">
                     </div>
                 </div>
 
@@ -457,27 +470,31 @@
                     <div class="checkbox-group">
                         <label class="checkbox-item">
                             <input type="checkbox" id="rule1" checked>
-                            以尊重和包容的語氣進行討論
+                            以尊重、同理心的語氣回應學生的想法與感受
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="rule2" checked>
-                            鼓勵批判性思考和多元觀點
+                            不做價值判斷，提供引導和建議以促進自我反思
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="rule3" checked>
-                            呈現平衡的觀點，不強制單一立場
+                            使用相關的青少年經驗案例，促進高度參與
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="rule4" checked>
-                            引導學生思考解決方案與實際行動
+                            確保心理安全，鼓勵學生開放地分享想法
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="rule5">
-                            尊重並包含不同文化與背景觀點
+                            結合課程標準與核心素養目標
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="rule6">
-                            使用真實數據與案例
+                            避免講道理，以對話和反思為主
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule7">
+                            鼓勵學生同伴學習，強調多元觀點的價值
                         </label>
                     </div>
                 </div>
@@ -492,23 +509,27 @@
                     <div class="checkbox-group">
                         <label class="checkbox-item">
                             <input type="checkbox" id="tool1" checked>
-                            圖片/圖表顯示 (Markdown)
+                            圖片與情景設置 (Markdown語法)
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="tool2">
-                            資料庫連接 (統計數據查詢)
+                            角色扮演情境
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="tool3">
-                            網頁內容呈現 (資訊蒐集)
+                            思考引導問題
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="tool4">
-                            案例分析工具
+                            小組討論框架
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="tool5">
-                            思維導圖製作
+                            反思日誌提示
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool6">
+                            視覺化圖表 (心情溫度計、能量管理圖)
                         </label>
                     </div>
                 </div>
@@ -524,13 +545,16 @@
 
                     <div id="stepList" class="step-list">
                         <div class="step-item">
-                            <strong>Step 1:</strong> 介紹今日SDG主題及相關議題
+                            <strong>Step 1:</strong> 開場暖身：簡介今日主題，建立安全的學習環境
                         </div>
                         <div class="step-item">
-                            <strong>Step 2:</strong> 分享相關統計數據與真實案例
+                            <strong>Step 2:</strong> 提出情景案例或引導問題
                         </div>
                         <div class="step-item">
-                            <strong>Step 3:</strong> 進行互動練習與即時回饋
+                            <strong>Step 3:</strong> 引導學生思考與討論
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 4:</strong> 總結學習重點，鼓勵反思與應用
                         </div>
                     </div>
 
@@ -562,7 +586,7 @@
         <div class="footer">
             <div class="footer-text">
                 <strong>Beta 版本 | Beta Version</strong><br>
-                首次開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                國中版本首次開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
                 最後更新：2025年11月14日 | Last updated: November 14, 2025
             </div>
 
@@ -572,11 +596,123 @@
                 <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
                 <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
             </div>
+
+            <div class="footer-divider"></div>
+
+            <div style="font-size: 0.8em; line-height: 1.8; color: #000; text-align: left; background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+                
+                <p style="margin-bottom: 10px;"><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+                <p style="margin-bottom: 10px;">如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+                <p style="margin-bottom: 15px;">本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+
+                <p style="margin-bottom: 10px;"><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+                <p style="margin-bottom: 10px;">If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.</p>
+                <p style="margin-bottom: 10px;">The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.</p>
+
+                <p style="margin-top: 15px; font-weight: 600;">Google雲端連結 | Google Drive Link: 由各場次研習提供，或寄信到團隊信箱由葉教授及團隊共同管理 | Provided by each workshop session, or email our team inbox</p>
+            </div>
         </div>
     </div>
 
+    <!-- 成功通知 -->
+    <div class="success-toast" id="successToast"></div>
+
     <script>
         let steps = [];
+        let currentGrade = null;
+
+        // 年級預設內容
+        const gradePresets = {
+            '7': {
+                objective: '幫助七年級學生認識自己的情緒變化，學習基礎的情緒管理技巧，培養積極的自我認知',
+                agentName: '情感陪伴者',
+                agentDesc: '一位溫暖、親切的情感教練，理解青少年成長的挑戰，用幽默和實例幫助學生認識自己的情緒，提供實用的情緒管理方法。',
+                theme: '情緒覺察與自我認識',
+                resources: '情感案例、日常情景、簡單的自評工具',
+                duration: '20-25分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6'],
+                tools: ['tool1', 'tool3', 'tool5', 'tool6'],
+                steps: [
+                    '開場：分享學生可能熟悉的情緒變化情景',
+                    '認識情緒：用簡單的方式介紹不同的情緒類型',
+                    '個人經驗分享：邀請學生分享他們的情緒經驗',
+                    '學習技巧：教導一項簡單的情緒管理方法（深呼吸、停頓思考等）',
+                    '反思與應用：協助學生反思如何在日常生活中應用'
+                ]
+            },
+            '8': {
+                objective: '幫助八年級學生深入理解自己和他人的情緒，發展同理心，學習有效的人際溝通技巧和衝突解決方法',
+                agentName: '同理心教練',
+                agentDesc: '一位富有洞察力和耐心的教練，善於捕捉人際互動中的微妙之處，引導學生站在他人角度思考，促進同理心發展和有效溝通。',
+                theme: '同理心與人際溝通',
+                resources: '真實情境案例、人物角色卡、溝通對話範例、同理心場景',
+                duration: '25-30分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6', 'rule7'],
+                tools: ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'],
+                steps: [
+                    '引入複雜情景：提出涉及多人視角的現實情境',
+                    '多角度分析：引導學生從不同人物角度理解情感',
+                    '同理心練習：協助學生體驗他人的感受和想法',
+                    '溝通技巧應用：示範和練習有效的表達方式',
+                    '解決方案探討：促進學生思考互利的解決方式'
+                ]
+            },
+            '9': {
+                objective: '幫助九年級學生發展複雜的社會情感能力，包括自主決策、責任承擔、建立健康人際關係，為未來挑戰做準備',
+                agentName: '人生導師',
+                agentDesc: '一位具有深厚人生經驗的導師，理解青少年面臨的升學和生涯抉擇，引導學生進行深層反思，培養領導力、責任感和未來導向的思維。',
+                theme: '決策能力、責任承擔與生涯準備',
+                resources: '真實決策案例、升學工作選項、領導力情景、反思日誌框架',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7'],
+                tools: ['tool1', 'tool2', 'tool3', 'tool4', 'tool5', 'tool6'],
+                steps: [
+                    '場景設置：提出涉及多方利益的複雜決策情境',
+                    '價值澄清：引導學生思考自己的核心價值和目標',
+                    '決策分析：協助評估不同選項的利弊和後果',
+                    '責任考量：探討決策背後的社會和個人責任',
+                    '長期反思：促進學生思考決策如何影響未來發展'
+                ]
+            }
+        };
+
+        function loadGradePreset(grade) {
+            const preset = gradePresets[grade];
+            if (!preset) return;
+
+            // 填寫基本信息
+            document.getElementById('objective').value = preset.objective;
+            document.getElementById('agentName').value = preset.agentName;
+            document.getElementById('agentDesc').value = preset.agentDesc;
+            document.getElementById('theme').value = preset.theme;
+            document.getElementById('resources').value = preset.resources;
+            document.getElementById('duration').value = preset.duration;
+
+            // 重置規則複選框
+            document.querySelectorAll('.checkbox-item input[id^="rule"]').forEach(checkbox => {
+                checkbox.checked = preset.rules.includes(checkbox.id);
+            });
+
+            // 重置工具複選框
+            document.querySelectorAll('.checkbox-item input[id^="tool"]').forEach(checkbox => {
+                checkbox.checked = preset.tools.includes(checkbox.id);
+            });
+
+            // 載入步驟
+            steps = [...preset.steps];
+            renderSteps();
+
+            // 更新按鈕狀態
+            document.querySelectorAll('.grade-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            currentGrade = grade;
+
+            // 顯示成功提示
+            showToast(`✅ 已載入${grade}年級預設內容！`);
+        }
 
         function addStep() {
             const input = document.getElementById('stepInput');
@@ -615,58 +751,71 @@
             const objective = document.getElementById('objective').value;
             const agentName = document.getElementById('agentName').value || '教學助手';
             const agentDesc = document.getElementById('agentDesc').value;
-            const targetGrade = document.getElementById('targetGrade').value;
+            const theme = document.getElementById('theme').value;
             const resources = document.getElementById('resources').value;
             const duration = document.getElementById('duration').value;
 
-            const selectedSDGs = Array.from(document.querySelectorAll('input[name="sdg"]:checked'))
-                .map(el => el.value)
-                .join('、');
-
             let rulesText = '規則：\n';
-            if (document.getElementById('rule1').checked) rulesText += '1. 以尊重和包容的語氣進行討論\n';
-            if (document.getElementById('rule2').checked) rulesText += '2. 鼓勵批判性思考和多元觀點\n';
-            if (document.getElementById('rule3').checked) rulesText += '3. 呈現平衡的觀點，不強制單一立場\n';
-            if (document.getElementById('rule4').checked) rulesText += '4. 引導學生思考解決方案與實際行動\n';
-            if (document.getElementById('rule5').checked) rulesText += '5. 尊重並包含不同文化與背景觀點\n';
-            if (document.getElementById('rule6').checked) rulesText += '6. 使用真實數據與案例\n';
+            if (document.getElementById('rule1').checked) rulesText += '1. 以尊重、同理心的語氣回應學生的想法與感受\n';
+            if (document.getElementById('rule2').checked) rulesText += '2. 不做價值判斷，提供引導和建議以促進自我反思\n';
+            if (document.getElementById('rule3').checked) rulesText += '3. 使用相關的青少年經驗案例，促進高度參與\n';
+            if (document.getElementById('rule4').checked) rulesText += '4. 確保心理安全，鼓勵學生開放地分享想法\n';
+            if (document.getElementById('rule5').checked) rulesText += '5. 結合課程標準與核心素養目標\n';
+            if (document.getElementById('rule6').checked) rulesText += '6. 避免講道理，以對話和反思為主\n';
+            if (document.getElementById('rule7').checked) rulesText += '7. 鼓勵學生同伴學習，強調多元觀點的價值\n';
 
-            let stepsText = '學習流程：\n';
+            let toolsText = '教學工具與方法：\n';
+            if (document.getElementById('tool1').checked) toolsText += '- 圖片與情景設置\n';
+            if (document.getElementById('tool2').checked) toolsText += '- 角色扮演情境\n';
+            if (document.getElementById('tool3').checked) toolsText += '- 思考引導問題\n';
+            if (document.getElementById('tool4').checked) toolsText += '- 小組討論框架\n';
+            if (document.getElementById('tool5').checked) toolsText += '- 反思日誌提示\n';
+            if (document.getElementById('tool6').checked) toolsText += '- 視覺化圖表\n';
+
+            let stepsText = '學習流程與步驟：\n';
             steps.forEach((step, index) => {
                 stepsText += `Step ${index + 1}: ${step}\n`;
             });
 
             const prompt = `
-【SDG AI教學代理人設計】
+【SEL AI教學代理人設計 - 國中版本】
 
 【目標與角色】
 學習目標：${objective}
+教學主題：${theme}
 AI角色：${agentName}
 ${agentDesc ? `角色描述：${agentDesc}` : ''}
 
-這是一個以幫助${targetGrade}認識並探討${selectedSDGs}為目的，完全使用繁體中文來進行互動的人工智慧代理人(AI Agent)。
+這是一個幫助國中生練習${theme}的人工智慧教學代理人，旨在通過對話、引導和反思促進社會情感學習(SEL)。請完全使用繁體中文進行互動。
 
-【環境與內容】
-學習對象：${targetGrade}
-涵蓋SDG目標：${selectedSDGs}
+【教學背景】
+學習對象：國中生（年齡13-15歲）
 教學資源：${resources}
-教學時間：${duration}
+預計時間：${duration}
 
 【${rulesText}】
 
-【學習流程與行動】
-${stepsText}
+【${toolsText}】
 
-請根據上述設定進行教學。每次只進行一個步驟，等待學生回答後再進行下一步。鼓勵學生進行批判性思考，考慮多元觀點，並思考實際可行的解決方案。
+【${stepsText}】
+
+【教學方式】
+- 每次進行一個步驟，等待學生回應後再進行下一步
+- 積極傾聽，詢問引導性問題而非直接給予答案
+- 根據學生的反應動態調整，確保參與度和理解度
+- 定期總結重點，確保學習目標達成
+
+請根據上述設定進行教學。
             `;
 
             document.getElementById('preview').textContent = prompt.trim();
+            showToast('✅ Prompt已生成！');
         }
 
         function copyPrompt() {
             const preview = document.getElementById('preview');
             navigator.clipboard.writeText(preview.textContent).then(() => {
-                alert('✅ 已複製到剪貼板！');
+                showToast('✅ 已複製到剪貼板！');
             });
         }
 
@@ -674,12 +823,27 @@ ${stepsText}
             const preview = document.getElementById('preview');
             const element = document.createElement('a');
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(preview.textContent));
-            element.setAttribute('download', 'SDG_AI教學代理人_' + new Date().getTime() + '.txt');
+            element.setAttribute('download', 'SEL_AI教學_國中版.txt');
             element.style.display = 'none';
             document.body.appendChild(element);
             element.click();
             document.body.removeChild(element);
+            showToast('✅ 已下載Prompt！');
         }
+
+        function showToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 初始化預設步驟
+        window.addEventListener('load', () => {
+            renderSteps();
+        });
     </script>
 </body>
 </html>
