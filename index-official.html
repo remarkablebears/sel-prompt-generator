@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教育部幸福教育 SEL Prompt生成系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+
+        header .tagline {
+            font-size: 1em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .gov-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.3);
+            margin-bottom: 20px;
+        }
+
+        .gov-badge strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .gov-badge p {
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .gov-contact {
+            background: rgba(255,255,255,0.15);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            border-top: 5px solid;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .tool-card.sel {
+            border-top-color: #FF6B6B;
+        }
+
+        .tool-card.sdg {
+            border-top-color: #00a651;
+        }
+
+        .tool-card.integrated {
+            border-top-color: #667eea;
+        }
+
+        .tool-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .tool-card h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .tool-card .subtitle {
+            color: #FF6B6B;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .tool-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .features li {
+            color: #555;
+            padding: 6px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.9em;
+        }
+
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #1e3a8a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            background: #1e40af;
+            transform: translateX(4px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .info-section h3 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-section li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .info-section li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #1e3a8a;
+        }
+
+        .five-pillars {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .five-pillars h3 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .pillar {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1e3a8a;
+        }
+
+        .pillar strong {
+            color: #1e3a8a;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .pillar p {
+            font-size: 0.9em;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .five-sel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .five-sel h3 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .sel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .sel-card {
+            background: #FFF5F5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FF6B6B;
+        }
+
+        .sel-card strong {
+            color: #FF6B6B;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+
+        .sel-card .english {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .sel-card p {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        footer {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        footer .contact {
+            background: #e0e7ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        footer .contact strong {
+            color: #1e3a8a;
+        }
+
+        footer p {
+            color: #666;
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 2em;
+            }
+        }
+
+        .quick-start {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+            border: 2px solid #ffa500;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .quick-start h3 {
+            color: #d97706;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .quick-start ol {
+            padding-left: 20px;
+        }
+
+        .quick-start li {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">❤️</div>
+            <h1>幸福教育 SEL Prompt生成系統</h1>
+            <p class="subtitle">教育部社會情緒學習中長程計畫 (114-118年)</p>
+            <p class="tagline">「幸福教育、健康臺灣 幸福學校、師生共好」</p>
+            
+            <div class="gov-badge">
+                <strong>📋 教育部公布計畫</strong>
+                <p>
+                    發布單位：學生事務及特殊教育司<br>
+                    聯絡人：蔡維濬 | 電話：(02)7736-7835<br>
+                    信箱：sa1556@mail.moe.gov.tw
+                </p>
+            </div>
+        </header>
+
+        <!-- Quick Start -->
+        <div class="quick-start">
+            <h3>⚡ 快速開始 (30秒)</h3>
+            <ol>
+                <li>點擊下方任一工具卡片</li>
+                <li>填寫簡單的班級資訊</li>
+                <li>點擊「生成Prompt」</li>
+                <li>複製到 ChatGPT / Claude</li>
+                <li>獲得專業教案 ✅</li>
+            </ol>
+        </div>
+
+        <!-- Tools Grid -->
+        <div class="tools-grid">
+            <!-- SEL官方版 -->
+            <div class="tool-card sel">
+                <div class="tool-icon">❤️</div>
+                <h2>SEL官方版</h2>
+                <p class="subtitle">完全對齊教育部框架</p>
+                <p>根據教育部官方定義的社會情緒學習五大能力，設計幸福教育課程。</p>
+                <ul class="features">
+                    <li>5大SEL能力官方定義</li>
+                    <li>課程、活動、口說練習</li>
+                    <li>教育部政策文件對齊</li>
+                    <li>幸福校園文化建構</li>
+                </ul>
+                <a href="sel-gov-official.html" class="btn">開啟工具 →</a>
+            </div>
+
+            <!-- SDG 17目標版 -->
+            <div class="tool-card sdg">
+                <div class="tool-icon">🌍</div>
+                <h2>SDG完整版</h2>
+                <p class="subtitle">17個永續發展目標</p>
+                <p>融合聯合國永續發展目標，培養學生全球公民素養與責任感。</p>
+                <ul class="features">
+                    <li>17個SDG目標全覆蓋</li>
+                    <li>課程、活動、評量設計</li>
+                    <li>國際趨勢對齊</li>
+                    <li>永續發展教育實踐</li>
+                </ul>
+                <a href="sdg-complete.html" class="btn btn-secondary">開啟工具 →</a>
+            </div>
+
+            <!-- 整合版 -->
+            <div class="tool-card integrated">
+                <div class="tool-icon">✨</div>
+                <h2>SEL+SDG整合版</h2>
+                <p class="subtitle">快速規劃工具</p>
+                <p>結合社會情緒學習與永續發展目標，設計全人教育課程。</p>
+                <ul class="features">
+                    <li>SEL+SDG雙軌並行</li>
+                    <li>教師版+學生版</li>
+                    <li>快速規劃模式</li>
+                    <li>全人教育理念實踐</li>
+                </ul>
+                <a href="index.html" class="btn">開啟工具 →</a>
+            </div>
+        </div>
+
+        <!-- Five SEL Abilities -->
+        <div class="five-sel">
+            <h3>📚 教育部定義的五大SEL能力</h3>
+            <div class="sel-grid">
+                <div class="sel-card">
+                    <strong>🔍 自我覺察</strong>
+                    <div class="english">Self-Awareness</div>
+                    <p>認識自己的情緒、想法、價值觀與優勢</p>
+                </div>
+                <div class="sel-card">
+                    <strong>⚡ 自我管理</strong>
+                    <div class="english">Self-Management</div>
+                    <p>管理情緒、設定目標、堅持克服挑戰</p>
+                </div>
+                <div class="sel-card">
+                    <strong>👥 社會覺察</strong>
+                    <div class="english">Social Awareness</div>
+                    <p>理解他人觀點、展現同理心、認識社會議題</p>
+                </div>
+                <div class="sel-card">
+                    <strong>🤝 人際關係技巧</strong>
+                    <div class="english">Relationship Skills</div>
+                    <p>建立健康人際關係、有效溝通、團隊合作</p>
+                </div>
+                <div class="sel-card">
+                    <strong>⚖️ 負責任的決定</strong>
+                    <div class="english">Responsible Decision-Making</div>
+                    <p>做出符合倫理的決定、考量他人影響</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Five Pillars -->
+        <div class="five-pillars">
+            <h3>🏛️ 計畫五大推動面向</h3>
+            <div class="pillars-grid">
+                <div class="pillar">
+                    <strong>1️⃣ 研發與開展在地經驗</strong>
+                    <p>發展本土性SEL內涵，建立在地實踐案例</p>
+                </div>
+                <div class="pillar">
+                    <strong>2️⃣ 人才培力</strong>
+                    <p>涵養教職員社會與情意知能</p>
+                </div>
+                <div class="pillar">
+                    <strong>3️⃣ 學校文化與環境</strong>
+                    <p>營造友善幸福校園環境</p>
+                </div>
+                <div class="pillar">
+                    <strong>4️⃣ 跨系統連結</strong>
+                    <p>整合社區、家庭、非營利組織資源</p>
+                </div>
+                <div class="pillar">
+                    <strong>5️⃣ 推廣傳播與國際連結</strong>
+                    <p>建立資源平臺，進行國際對話</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Goals -->
+        <div class="info-section">
+            <h3>🎯 計畫核心願景與目標</h3>
+            <ul>
+                <li>營造友善且幸福的校園環境</li>
+                <li>提升教職員與學生的情緒健康</li>
+                <li>培養人際互動、同理關懷、道德責任等知識、技巧、態度、信念</li>
+                <li>實踐全人教育理念</li>
+                <li>促進正向氛圍、同理心關懷、社會和諧、可持續發展</li>
+                <li>與OECD、UNESCO願景與趨勢相符</li>
+            </ul>
+        </div>
+
+        <!-- Student Expectations -->
+        <div class="info-section">
+            <h3>✨ 學生應逐步具備的四大特質</h3>
+            <ul>
+                <li><strong>自我認同</strong> - 了解自己的優勢、挑戰與價值</li>
+                <li><strong>同理關懷他人</strong> - 理解他人感受，展現關懷</li>
+                <li><strong>樂在學習</strong> - 享受學習過程，主動參與</li>
+                <li><strong>樂於挑戰不怕失敗</strong> - 勇敢嘗試，從失敗學習</li>
+            </ul>
+        </div>
+
+        <!-- Documentation -->
+        <div class="info-section">
+            <h3>📚 完整說明文檔</h3>
+            <ul>
+                <li><strong>COMPLETE_SYSTEM_GUIDE.md</strong> - 四工具整合使用指南</li>
+                <li><strong>GOV_SEL_OFFICIAL_GUIDE.md</strong> - 教育部官方框架完整說明</li>
+                <li><strong>THREE_TOOLS_GUIDE.md</strong> - 原始三工具對比</li>
+                <li><strong>SEL_SDG_Agent_Prompts_for_Taiwan_JHS.md</strong> - 完整Prompt模版參考</li>
+                <li><strong>DEPLOYMENT_GUIDE.md</strong> - GitHub部署指南</li>
+                <li><strong>README.md</strong> - 快速開始指南</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="contact">
+                <strong>📞 教育部官方聯絡</strong><br>
+                學生事務及特殊教育司<br>
+                聯絡人：蔡維濬<br>
+                電話：(02)7736-7835<br>
+                信箱：sa1556@mail.moe.gov.tw
+            </div>
+            <p><strong>📅 計畫期程</strong>：114年至118年 (2025-2029)</p>
+            <p><strong>🎯 計畫願景</strong>：幸福教育、健康臺灣、幸福學校、師生共好</p>
+            <p style="margin-top: 20px; color: #999; font-size: 0.9em;">
+                Made with ❤️ for Taiwan Teachers<br>
+                Aligned with MOE Social Emotional Learning Initiative 🏛️<br>
+                May your students grow to be happy and responsible citizens
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
