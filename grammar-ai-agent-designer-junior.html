@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar AI教學代理人設計器（國中版）| Grammar AI Teaching Agent Designer for Junior High</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: #000;
+            margin-bottom: 30px;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 183, 77, 0.1) 100%);
+            border-left: 4px solid #ff9800;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .info-banner strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        .info-banner p {
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .info-banner .divider {
+            height: 1px;
+            background: rgba(255, 152, 0, 0.2);
+            margin: 15px 0;
+        }
+
+        /* 文法類型快速選擇區 */
+        .grammar-selector {
+            background: linear-gradient(135deg, rgba(255, 183, 77, 0.15) 0%, rgba(255, 204, 118, 0.15) 100%);
+            border: 2px solid #ffb74d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .grammar-selector h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .grammar-selector p {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .grammar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .grammar-btn {
+            padding: 12px 16px;
+            border: 2px solid #ffb74d;
+            background: white;
+            color: #e65100;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .grammar-btn:hover {
+            background: #fff3e0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+        }
+
+        .grammar-btn.active {
+            background: #ffb74d;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #000;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #ffb74d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #000;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        label .en {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: normal;
+            display: block;
+            margin-top: 4px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #ffb74d;
+            box-shadow: 0 0 0 3px rgba(255, 183, 77, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .step-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #ffb74d;
+            border-radius: 4px;
+        }
+
+        .step-item strong {
+            color: #ffb74d;
+        }
+
+        .add-step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-step input {
+            flex: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ffb74d;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e65100;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #000;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .preview-box {
+            background: #f8f9fa;
+            border: 2px solid #ffb74d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #ffb74d;
+            margin-bottom: 12px;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #000;
+            padding: 30px 20px;
+        }
+
+        .footer-text {
+            font-size: 0.9em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+
+        .footer-credit {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .footer-credit p {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .grammar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        .success-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ffb74d;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .success-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 標題 -->
+        <header>
+            <h1>📚 Grammar AI教學代理人設計器</h1>
+            <p>國中版本 | Junior High School Edition</p>
+        </header>
+
+        <!-- 文法類型快速選擇 -->
+        <div class="grammar-selector">
+            <h3>🎯 選擇文法教學類型</h3>
+            <p>點擊下方按鈕快速載入該文法主題的預設內容</p>
+            <div class="grammar-grid">
+                <button class="grammar-btn" onclick="loadGrammarPreset('tense')">
+                    <div><strong>時態</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Tense</div>
+                </button>
+                <button class="grammar-btn" onclick="loadGrammarPreset('comparison')">
+                    <div><strong>比較級</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Comparison</div>
+                </button>
+                <button class="grammar-btn" onclick="loadGrammarPreset('conditional')">
+                    <div><strong>條件句</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Conditional</div>
+                </button>
+                <button class="grammar-btn" onclick="loadGrammarPreset('passive')">
+                    <div><strong>被動語態</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Passive</div>
+                </button>
+                <button class="grammar-btn" onclick="loadGrammarPreset('phrase')">
+                    <div><strong>片語</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Phrase</div>
+                </button>
+                <button class="grammar-btn" onclick="loadGrammarPreset('clause')">
+                    <div><strong>子句</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Clause</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 使用說明 -->
+        <div class="info-banner">
+            <strong>💡 使用步驟 | Usage Steps</strong>
+            <p><strong>第1步：</strong>選擇文法教學類型快速載入預設內容</p>
+            <p><strong>第2步：</strong>填寫基本資訊，自訂教學規則、工具和學習流程</p>
+            <p><strong>第3步：</strong>點擊「生成Prompt」預覽AI教學代理人的指令</p>
+            <p><strong>第4步：</strong>複製或下載Prompt到您選擇的AI工具（如Claude、ChatGPT等）</p>
+        </div>
+
+        <!-- 主要表單 -->
+        <div class="main-grid">
+            <!-- 左側：基本設定 -->
+            <div>
+                <!-- 基本設定 -->
+                <div class="section">
+                    <div class="section-title">⚙️ 基本設定 | Basic Settings</div>
+
+                    <!-- 選定的文法類型 -->
+                    <div class="form-group">
+                        <label>
+                            選定的文法主題 <span class="en">Selected Grammar Topic</span>
+                        </label>
+                        <input type="text" id="selectedGrammar" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                    </div>
+
+                    <!-- 目標 -->
+                    <div class="form-group">
+                        <label>
+                            學習目標 <span class="en">Learning Objective</span>
+                        </label>
+                        <textarea id="objective" placeholder="例：幫助學生掌握時態用法，能正確使用簡單過去式和現在完成式"></textarea>
+                    </div>
+
+                    <!-- AI角色名稱 -->
+                    <div class="form-group">
+                        <label>
+                            AI角色名稱 <span class="en">AI Agent Name</span>
+                        </label>
+                        <input type="text" id="agentName" placeholder="例：文法教練、英文糾正官">
+                    </div>
+
+                    <!-- 角色描述 -->
+                    <div class="form-group">
+                        <label>
+                            角色描述 <span class="en">Agent Description</span>
+                        </label>
+                        <textarea id="agentDesc" placeholder="例：一位耐心的文法教練，擅長用實用例句和互動練習幫助學生理解文法概念。"></textarea>
+                    </div>
+
+                    <!-- CEFR等級 -->
+                    <div class="form-group">
+                        <label>
+                            目標 CEFR 等級 <span class="en">Target CEFR Level</span>
+                        </label>
+                        <select id="cefrLevel">
+                            <option value="">請選擇...</option>
+                            <option value="A1">A1 - 初級 (Beginner)</option>
+                            <option value="A2">A2 - 初級 (Elementary)</option>
+                            <option value="B1">B1 - 中級 (Intermediate)</option>
+                            <option value="B2">B2 - 中高級 (Upper Intermediate)</option>
+                        </select>
+                    </div>
+
+                    <!-- 教學資源 -->
+                    <div class="form-group">
+                        <label>
+                            教學資源 <span class="en">Teaching Resources</span>
+                        </label>
+                        <input type="text" id="resources" placeholder="例：例句、對話、練習題、實際情境">
+                    </div>
+
+                    <!-- 上課時間 -->
+                    <div class="form-group">
+                        <label>
+                            上課時間 <span class="en">Duration</span>
+                        </label>
+                        <input type="text" id="duration" placeholder="例：20-25分鐘">
+                    </div>
+                </div>
+
+                <!-- 規則 -->
+                <div class="section">
+                    <div class="section-title">📋 規則 | Rules</div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule1" checked>
+                            用簡單易懂的解釋和例句，避免專業術語過多
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule2" checked>
+                            當學生出錯時，鼓勵性地指正，並解釋為什麼
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule3" checked>
+                            用青少年感興趣的主題和實際情境來舉例
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule4" checked>
+                            對比原文法和正確用法，突顯差異
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule5">
+                            鼓勵學生在日常英文中主動應用學到的文法
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule6">
+                            提供充足的練習機會和實時反饋
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：學習流程 -->
+            <div>
+                <!-- 工具 -->
+                <div class="section">
+                    <div class="section-title">🛠️ 工具 | Tools</div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool1" checked>
+                            例句與對比分析
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool2" checked>
+                            填空練習與造句
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool3">
+                            真實對話情景
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool4">
+                            文法規則總結表
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool5">
+                            常見錯誤集錦
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool6">
+                            自我檢核清單
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 學習流程與步驟 -->
+                <div class="section">
+                    <div class="section-title">📚 學習流程 | Learning Flow</div>
+
+                    <div class="add-step">
+                        <input type="text" id="stepInput" placeholder="輸入步驟內容...">
+                        <button class="btn-primary" onclick="addStep()">新增</button>
+                    </div>
+
+                    <div id="stepList" class="step-list">
+                        <div class="step-item">
+                            <strong>Step 1:</strong> 介紹文法概念及其使用時機
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 2:</strong> 提供多個例句，對比正確和錯誤用法
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 3:</strong> 引導學生分析規則和例外
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 4:</strong> 進行互動練習（填空、選擇、造句）
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 5:</strong> 檢視答案、解釋常見錯誤、鼓勵應用
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary" onclick="clearSteps()">清空步驟</button>
+                </div>
+
+                <!-- 預覽 -->
+                <div class="section">
+                    <div class="section-title">👁️ 預覽 | Preview</div>
+
+                    <button class="btn-primary" onclick="generatePrompt()" style="width: 100%; margin-bottom: 15px;">
+                        生成 Prompt
+                    </button>
+
+                    <div class="preview-box">
+                        <div class="preview-title">生成的Prompt：</div>
+                        <div class="preview-content" id="preview">點擊「生成Prompt」以預覽...</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="copyPrompt()">複製</button>
+                        <button class="btn-secondary" onclick="downloadPrompt()">下載</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>Beta 版本 | Beta Version</strong><br>
+                Grammar 國中版本開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                最後更新：2025年11月14日 | Last updated: November 14, 2025
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-credit">
+                <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
+                <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div style="font-size: 0.8em; line-height: 1.8; color: #000; text-align: left; background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+                
+                <p style="margin-bottom: 10px;"><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+                <p style="margin-bottom: 10px;">如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+                <p style="margin-bottom: 15px;">本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+
+                <p style="margin-bottom: 10px;"><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+                <p style="margin-bottom: 10px;">If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.</p>
+                <p style="margin-bottom: 10px;">The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.</p>
+
+                <p style="margin-top: 15px; font-weight: 600;">Google雲端連結 | Google Drive Link: 由各場次研習提供，或寄信到團隊信箱由葉教授及團隊共同管理 | Provided by each workshop session, or email our team inbox</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功通知 -->
+    <div class="success-toast" id="successToast"></div>
+
+    <script>
+        let steps = [];
+        let currentGrammar = null;
+
+        // 文法主題預設內容
+        const grammarPresets = {
+            'tense': {
+                name: '時態 | Tense',
+                objective: '幫助學生掌握英文時態系統，能正確使用簡單過去式、現在完成式、簡單現在式等基本時態，理解時態背後的邏輯',
+                agentName: '時態教練',
+                agentDesc: '一位擅長用時間軸和生活例子解釋時態的教練，能幫助學生理解時態的本質而不只是記憶規則。',
+                cefrLevel: 'A1-B1',
+                resources: '時間軸圖表、日常情景對話、時態對比例句',
+                duration: '25-30分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            'comparison': {
+                name: '比較級與最高級 | Comparison',
+                objective: '幫助學生掌握形容詞和副詞的比較級和最高級用法，能在日常溝通中正確表達比較和評價',
+                agentName: '比較專家',
+                agentDesc: '一位能用具體例子和對比練習幫助學生掌握比較表達的教練。',
+                cefrLevel: 'A1-A2',
+                resources: '比較圖表、對比例句、練習題',
+                duration: '20-25分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            'conditional': {
+                name: '條件句 | Conditional',
+                objective: '幫助學生理解英文條件句系統（0-3式），能在虛擬和真實情況中恰當使用條件句表達',
+                agentName: '條件句導師',
+                agentDesc: '一位能清楚解釋條件句邏輯和時態搭配的導師，用假設情景幫助學生理解。',
+                cefrLevel: 'B1',
+                resources: '條件句類型表、假設情景、練習對話',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            'passive': {
+                name: '被動語態 | Passive Voice',
+                objective: '幫助學生理解被動語態的結構和用法，能在適當時機使用被動語態，理解主動和被動的區別',
+                agentName: '語態轉換官',
+                agentDesc: '一位專長於主被動轉換的教練，能用明確的轉換步驟和例句幫助學生掌握。',
+                cefrLevel: 'A2-B1',
+                resources: '主被動對比表、轉換練習、情景應用',
+                duration: '25-30分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            'phrase': {
+                name: '片語 | Phrase',
+                objective: '幫助學生認識和運用常用英文片語，理解片語的意思和使用時機，逐漸累積片語詞彙',
+                agentName: '片語收集家',
+                agentDesc: '一位擅長用故事和情景教授片語的教練，幫助學生理解片語的含義和實際應用。',
+                cefrLevel: 'A2-B2',
+                resources: '片語分類表、情景對話、片語辨析',
+                duration: '25-30分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule5', 'rule6']
+            },
+            'clause': {
+                name: '子句 | Clause',
+                objective: '幫助學生理解名詞子句、形容詞子句、副詞子句的功能和用法，能正確使用相對代名詞和連結詞',
+                agentName: '句型結構專家',
+                agentDesc: '一位能用句型圖解和複句分析幫助學生理解複雜句構的專家。',
+                cefrLevel: 'B1-B2',
+                resources: '子句類型表、複句分析、句型模板',
+                duration: '30-35分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            }
+        };
+
+        function loadGrammarPreset(grammarType) {
+            const preset = grammarPresets[grammarType];
+            if (!preset) return;
+
+            document.getElementById('selectedGrammar').value = preset.name;
+            document.getElementById('objective').value = preset.objective;
+            document.getElementById('agentName').value = preset.agentName;
+            document.getElementById('agentDesc').value = preset.agentDesc;
+            document.getElementById('cefrLevel').value = preset.cefrLevel;
+            document.getElementById('resources').value = preset.resources;
+            document.getElementById('duration').value = preset.duration;
+
+            document.querySelectorAll('.checkbox-item input[id^="rule"]').forEach(checkbox => {
+                checkbox.checked = preset.rules.includes(checkbox.id);
+            });
+
+            document.querySelectorAll('.checkbox-item input[id^="tool"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+
+            steps = [
+                '介紹文法概念及其使用時機',
+                '提供多個例句，對比正確和錯誤用法',
+                '引導學生分析規則和例外',
+                '進行互動練習（填空、選擇、造句）',
+                '檢視答案、解釋常見錯誤、鼓勵應用'
+            ];
+            renderSteps();
+
+            document.querySelectorAll('.grammar-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            currentGrammar = grammarType;
+
+            showToast(`✅ 已載入 ${preset.name} 預設內容！`);
+        }
+
+        function addStep() {
+            const input = document.getElementById('stepInput');
+            if (input.value.trim()) {
+                steps.push(input.value);
+                renderSteps();
+                input.value = '';
+            }
+        }
+
+        function renderSteps() {
+            const list = document.getElementById('stepList');
+            list.innerHTML = '';
+            steps.forEach((step, index) => {
+                const div = document.createElement('div');
+                div.className = 'step-item';
+                div.innerHTML = `
+                    <strong>Step ${index + 1}:</strong> ${step}
+                    <button class="btn-secondary" style="width: 80px; padding: 5px; font-size: 0.8em; margin-top: 8px;" onclick="removeStep(${index})">刪除</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function removeStep(index) {
+            steps.splice(index, 1);
+            renderSteps();
+        }
+
+        function clearSteps() {
+            steps = [];
+            renderSteps();
+        }
+
+        function generatePrompt() {
+            const selectedGrammar = document.getElementById('selectedGrammar').value;
+            const objective = document.getElementById('objective').value;
+            const agentName = document.getElementById('agentName').value || '教學助手';
+            const agentDesc = document.getElementById('agentDesc').value;
+            const cefrLevel = document.getElementById('cefrLevel').value;
+            const resources = document.getElementById('resources').value;
+            const duration = document.getElementById('duration').value;
+
+            let rulesText = '規則：\n';
+            if (document.getElementById('rule1').checked) rulesText += '1. 用簡單易懂的解釋和例句，避免專業術語過多\n';
+            if (document.getElementById('rule2').checked) rulesText += '2. 當學生出錯時，鼓勵性地指正，並解釋為什麼\n';
+            if (document.getElementById('rule3').checked) rulesText += '3. 用青少年感興趣的主題和實際情境來舉例\n';
+            if (document.getElementById('rule4').checked) rulesText += '4. 對比原文法和正確用法，突顯差異\n';
+            if (document.getElementById('rule5').checked) rulesText += '5. 鼓勵學生在日常英文中主動應用學到的文法\n';
+            if (document.getElementById('rule6').checked) rulesText += '6. 提供充足的練習機會和實時反饋\n';
+
+            let toolsText = '教學工具與方法：\n';
+            if (document.getElementById('tool1').checked) toolsText += '- 例句與對比分析\n';
+            if (document.getElementById('tool2').checked) toolsText += '- 填空練習與造句\n';
+            if (document.getElementById('tool3').checked) toolsText += '- 真實對話情景\n';
+            if (document.getElementById('tool4').checked) toolsText += '- 文法規則總結表\n';
+            if (document.getElementById('tool5').checked) toolsText += '- 常見錯誤集錦\n';
+            if (document.getElementById('tool6').checked) toolsText += '- 自我檢核清單\n';
+
+            let stepsText = '學習流程與步驟：\n';
+            steps.forEach((step, index) => {
+                stepsText += `Step ${index + 1}: ${step}\n`;
+            });
+
+            const prompt = `
+【Grammar AI教學代理人設計 - 國中版本】
+
+【目標與角色】
+文法主題：${selectedGrammar}
+學習目標：${objective}
+AI角色：${agentName}
+${agentDesc ? `角色描述：${agentDesc}` : ''}
+目標CEFR等級：${cefrLevel}
+
+這是一個幫助國中生學習英文文法的AI教學代理人，旨在通過清晰的解釋、豐富的例句和互動練習幫助學生掌握文法概念。請完全使用繁體中文進行互動。
+
+【教學背景】
+學習對象：國中生（年齡13-15歲）
+教學資源：${resources}
+預計時間：${duration}
+
+【${rulesText}】
+
+【${toolsText}】
+
+【${stepsText}】
+
+【教學方式】
+- 每次進行一個步驟，等待學生回應後再進行下一步
+- 先提供簡潔清楚的規則解釋和多個例句
+- 進行對比分析，幫助學生理解正確和錯誤用法的區別
+- 根據學生的回答給予即時反饋和鼓勵
+- 透過練習題鞏固學習，並在全程提供解釋和支持
+- 最後鼓勵學生在實際英文使用中應用所學文法
+
+請根據上述設定進行教學。
+            `;
+
+            document.getElementById('preview').textContent = prompt.trim();
+            showToast('✅ Prompt已生成！');
+        }
+
+        function copyPrompt() {
+            const preview = document.getElementById('preview');
+            navigator.clipboard.writeText(preview.textContent).then(() => {
+                showToast('✅ 已複製到剪貼板！');
+            });
+        }
+
+        function downloadPrompt() {
+            const preview = document.getElementById('preview');
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(preview.textContent));
+            element.setAttribute('download', 'Grammar_AI教學_國中版.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showToast('✅ 已下載Prompt！');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        window.addEventListener('load', () => {
+            renderSteps();
+        });
+    </script>
+</body>
+</html>

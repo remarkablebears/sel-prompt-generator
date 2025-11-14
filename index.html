@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt 教學代理人工具中心 | AI Teaching Agent Design Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 左邊菜單 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 3px solid #1976d2;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .menu-section {
+            padding: 20px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-section-title {
+            font-size: 0.9em;
+            font-weight: 700;
+            color: #1976d2;
+            padding: 10px 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #000;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #f0f7ff;
+            border-left-color: #1976d2;
+            padding-left: 18px;
+        }
+
+        .menu-item.active {
+            background: #e3f2fd;
+            border-left-color: #1976d2;
+            color: #1565c0;
+            font-weight: 600;
+        }
+
+        /* 右邊內容區 */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: #000;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        header h2 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        /* 使用說明 Banner */
+        .info-banner {
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(66, 165, 245, 0.1) 100%);
+            border-left: 4px solid #1976d2;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .info-banner strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        .info-banner p {
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .info-banner .divider {
+            height: 1px;
+            background: rgba(21, 101, 192, 0.2);
+            margin: 15px 0;
+        }
+
+        .content-area {
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #000;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #1976d2;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .tool-header {
+            padding: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tool-icon {
+            font-size: 2.5em;
+        }
+
+        .tool-header-text h3 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .tool-header-text p {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .tool-body {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .tool-desc {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .tool-features li {
+            padding: 6px 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .tool-features li:before {
+            content: "✓ ";
+            color: #1976d2;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .tool-footer {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-open {
+            flex: 1;
+            padding: 12px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-open:hover {
+            background: #1565c0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 10px;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .footer {
+            text-align: center;
+            color: #000;
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid #1976d2;
+        }
+
+        .footer-text {
+            margin-bottom: 12px;
+            line-height: 1.8;
+            font-size: 0.9em;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #1976d2;
+            margin: 20px 0;
+        }
+
+        .footer-credit {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        /* 主頁內容 */
+        .home-content {
+            text-align: center;
+        }
+
+        .home-content h2 {
+            font-size: 2.5em;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .home-content p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+                border-bottom: 2px solid #1976d2;
+            }
+
+            .main-content {
+                margin-left: 0;
+                height: auto;
+                padding: 20px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-section {
+                display: inline-block;
+                padding: 10px 20px;
+            }
+
+            .menu-item {
+                display: inline-block;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 左邊菜單 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🤖 AI Prompt</h1>
+            <p>教學代理人工具</p>
+        </div>
+
+        <!-- 首頁 -->
+        <div class="menu-section">
+            <div class="menu-item active" onclick="showContent('home')">
+                🏠 首頁 | Home
+            </div>
+        </div>
+
+        <!-- SEL -->
+        <div class="menu-section">
+            <div class="menu-section-title">❤️ SEL 社會情緒學習</div>
+            <div class="menu-item" onclick="showContent('sel')">
+                SEL 代理人設計器
+            </div>
+        </div>
+
+        <!-- SDG -->
+        <div class="menu-section">
+            <div class="menu-section-title">🌍 SDG 永續發展</div>
+            <div class="menu-item" onclick="showContent('sdg')">
+                SDG 代理人設計器
+            </div>
+        </div>
+
+        <!-- 英文文法 -->
+        <div class="menu-section">
+            <div class="menu-section-title">📚 English Grammar</div>
+            <div class="menu-item" onclick="showContent('grammar')">
+                英文文法代理人設計器
+            </div>
+        </div>
+
+        <!-- 敬請期待 -->
+        <div class="menu-section">
+            <div class="menu-section-title">🚀 Coming Soon</div>
+            <div class="menu-item" onclick="showContent('coming-soon')" style="background: #fff3e0; border-left: 3px solid #ffb74d;">
+                即將推出的版本
+            </div>
+        </div>
+
+        <!-- 學術英文寫作 -->
+        <div class="menu-section">
+            <div class="menu-section-title">✍️ Academic Writing</div>
+            <div class="menu-item" onclick="showContent('academic-writing')">
+                學術英文寫作代理人設計器
+            </div>
+        </div>
+    </div>
+
+    <!-- 右邊內容 -->
+    <div class="main-content">
+        <div class="container">
+            <!-- 首頁 -->
+            <div id="home" class="content-area active">
+                <div class="home-content">
+                    <header>
+                        <h2>🤖 AI Prompt 教學代理人工具中心</h2>
+                        <p>AI Teaching Agent Design Platform</p>
+                        <p style="font-size: 0.95em; margin-top: 15px;">協助英語、EMI、CLIL教師快速熟悉AI Prompt結構</p>
+                    </header>
+
+                    <div class="info-banner">
+                        <strong>💡 工具使用說明 | Tool Instructions</strong>
+                        
+                        <p><strong>中文：</strong>此工具主要為幫助英語老師、EMI老師、CLIL老師熟悉AI提示（Prompt）的模板。熟悉後，教師不一定要使用本介面，亦可自行組合操作，並根據教師專業知能進行調整。</p>
+                        
+                        <div class="divider"></div>
+                        
+                        <p><strong>English:</strong> This tool is designed to help English teachers, EMI teachers, and CLIL teachers familiarize themselves with AI prompt templates. After becoming familiar with the templates, teachers are not required to use this interface; they may also combine and create their own prompts according to their professional expertise and classroom needs.</p>
+                    </div>
+
+                    <div style="margin-top: 50px; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                        <h3 style="font-size: 1.5em; color: #000; margin-bottom: 20px;">📋 選擇工具開始使用</h3>
+                        <p style="font-size: 1em; color: #666; margin-bottom: 30px;">左邊菜單中選擇您需要的工具</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div onclick="showContent('sel')" style="padding: 20px; background: #f0f7ff; border: 2px solid #1976d2; border-radius: 8px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#e3f2fd'" onmouseout="this.style.background='#f0f7ff'">
+                                <div style="font-size: 2em; margin-bottom: 10px;">❤️</div>
+                                <strong style="font-size: 1.1em; color: #000;">SEL</strong><br>
+                                <span style="font-size: 0.9em; color: #666;">社會情緒學習</span>
+                            </div>
+                            
+                            <div onclick="showContent('sdg')" style="padding: 20px; background: #f0f7ff; border: 2px solid #1976d2; border-radius: 8px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#e3f2fd'" onmouseout="this.style.background='#f0f7ff'">
+                                <div style="font-size: 2em; margin-bottom: 10px;">🌍</div>
+                                <strong style="font-size: 1.1em; color: #000;">SDG</strong><br>
+                                <span style="font-size: 0.9em; color: #666;">永續發展</span>
+                            </div>
+                            
+                            <div onclick="showContent('grammar')" style="padding: 20px; background: #f0f7ff; border: 2px solid #1976d2; border-radius: 8px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#e3f2fd'" onmouseout="this.style.background='#f0f7ff'">
+                                <div style="font-size: 2em; margin-bottom: 10px;">📚</div>
+                                <strong style="font-size: 1.1em; color: #000;">Grammar</strong><br>
+                                <span style="font-size: 0.9em; color: #666;">英文文法</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEL -->
+            <div id="sel" class="content-area">
+                <header>
+                    <h2>❤️ SEL AI教學代理人設計器</h2>
+                    <p>SEL AI Teaching Agent Designer</p>
+                </header>
+
+                <div class="info-banner">
+                    <strong>💡 工具使用說明 | Tool Instructions</strong>
+                    <p><strong>中文：</strong>此工具主要為幫助英語老師、EMI老師、CLIL老師熟悉AI提示（Prompt）的模板。熟悉後，教師不一定要使用本介面，亦可自行組合操作，並根據教師專業知能進行調整。</p>
+                    <div class="divider"></div>
+                    <p><strong>English:</strong> This tool is designed to help English teachers, EMI teachers, and CLIL teachers familiarize themselves with AI prompt templates. After becoming familiar with the templates, teachers are not required to use this interface; they may also combine and create their own prompts according to their professional expertise and classroom needs.</p>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="tool-icon">❤️</div>
+                            <div class="tool-header-text">
+                                <h3>SEL代理人設計器</h3>
+                                <p>Design SEL Teaching Agents</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為國中生設計SEL（社會情感學習）教學代理人</p>
+                            <ul class="tool-features">
+                                <li>按年級自動載入預設</li>
+                                <li>七八九年級特化內容</li>
+                                <li>情緒、同理心、決策能力</li>
+                                <li>實時預覽Prompt</li>
+                            </ul>
+                            <span class="status-badge">✅ 國中版</span>
+                        </div>
+                        <div class="tool-footer">
+                            <a href="sel-ai-agent-designer-junior.html" class="btn-open">開啟工具</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SDG -->
+            <div id="sdg" class="content-area">
+                <header>
+                    <h2>🌍 SDG AI教學代理人設計器</h2>
+                    <p>SDG AI Teaching Agent Designer</p>
+                </header>
+
+                <div class="info-banner">
+                    <strong>💡 工具使用說明 | Tool Instructions</strong>
+                    <p><strong>中文：</strong>此工具主要為幫助英語老師、EMI老師、CLIL老師熟悉AI提示（Prompt）的模板。熟悉後，教師不一定要使用本介面，亦可自行組合操作，並根據教師專業知能進行調整。</p>
+                    <div class="divider"></div>
+                    <p><strong>English:</strong> This tool is designed to help English teachers, EMI teachers, and CLIL teachers familiarize themselves with AI prompt templates. After becoming familiar with the templates, teachers are not required to use this interface; they may also combine and create their own prompts according to their professional expertise and classroom needs.</p>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #00a651 0%, #004d26 100%);">
+                            <div class="tool-icon">🌍</div>
+                            <div class="tool-header-text">
+                                <h3>SDG代理人設計器</h3>
+                                <p>Design SDG Teaching Agents</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為國中生設計SDG（永續發展）教學代理人</p>
+                            <ul class="tool-features">
+                                <li>所有17個SDG目標</li>
+                                <li>國中生適用級別</li>
+                                <li>全球視野×在地行動</li>
+                                <li>案例與實踐結合</li>
+                            </ul>
+                            <span class="status-badge">✅ 國中版</span>
+                        </div>
+                        <div class="tool-footer">
+                            <a href="sdg-ai-agent-designer-junior.html" class="btn-open">開啟工具</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 英文文法 -->
+            <div id="grammar" class="content-area">
+                <header>
+                    <h2>📚 英文文法AI教學代理人設計器</h2>
+                    <p>English Grammar AI Teaching Agent Designer</p>
+                </header>
+
+                <div class="info-banner">
+                    <strong>💡 敬請期待 | Coming Soon</strong>
+                    <p><strong>中文：</strong>此工具正在開發中，預計不久將推出。感謝您的耐心！</p>
+                    <div class="divider"></div>
+                    <p><strong>English:</strong> This tool is coming soon. Thank you for your patience!</p>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-header-text">
+                                <h3>英文文法代理人設計器</h3>
+                                <p>Design Grammar Teaching Agents</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">根據CEFR等級設計文法教學代理人</p>
+                            <ul class="tool-features">
+                                <li>6大文法主題快速選擇</li>
+                                <li>Pre-A1 ~ B2 難度配置</li>
+                                <li>例句與練習結合</li>
+                                <li>實時反饋與指正</li>
+                            </ul>
+                            <span class="status-badge">✅ 國中版</span>
+                        </div>
+                        <div class="tool-footer">
+                            <a href="grammar-ai-agent-designer-junior.html" class="btn-open">開啟工具</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 學術英文寫作 -->
+            <div id="academic-writing" class="content-area">
+                <header>
+                    <h2>✍️ Academic English Writing AI教學代理人設計器</h2>
+                    <p>Academic Writing AI Teaching Agent Designer</p>
+                </header>
+
+                <div class="info-banner">
+                    <strong>💡 工具使用說明 | Tool Instructions</strong>
+                    <p><strong>中文：</strong>此工具主要為幫助大學講師和研究指導教授設計AI教學代理人，協助研究生進行學術英文寫作。熟悉後，教師不一定要使用本介面，亦可自行組合操作，並根據教師專業知能進行調整。</p>
+                    <div class="divider"></div>
+                    <p><strong>English:</strong> This tool is designed to help university instructors and research supervisors design AI teaching agents to assist graduate students in academic English writing. After becoming familiar with the templates, you may combine and create your own prompts according to your professional expertise.</p>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #9575cd 0%, #673ab7 100%);">
+                            <div class="tool-icon">✍️</div>
+                            <div class="tool-header-text">
+                                <h3>學術英文寫作代理人設計器</h3>
+                                <p>Design Academic Writing Teaching Agents</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為研究生設計學術英文寫作教學系統</p>
+                            <ul class="tool-features">
+                                <li>6種論文類型快速選擇</li>
+                                <li>寫作結構與流程指導</li>
+                                <li>引用規範與倫理規範</li>
+                                <li>實時預覽Prompt</li>
+                            </ul>
+                            <span class="status-badge">✅ 大學版</span>
+                        </div>
+                        <div class="tool-footer">
+                            <a href="academic-english-writing-university.html" class="btn-open">開啟工具</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 敬請期待的版本 -->
+            <div id="coming-soon" class="content-area">
+                <header>
+                    <h2>🚀 即將推出的版本 | Coming Soon</h2>
+                    <p>Upcoming Tool Versions</p>
+                </header>
+
+                <div class="info-banner">
+                    <strong>💡 開發進度 | Development Status</strong>
+                    <p><strong>中文：</strong>感謝您的耐心！這些工具正在開發中。我們致力於為更多年級和教育階段的老師提供支援。</p>
+                    <div class="divider"></div>
+                    <p><strong>English:</strong> Thank you for your patience! These tools are under development. We are committed to supporting teachers across all educational levels.</p>
+                </div>
+
+                <div class="tools-grid">
+                    <!-- SEL 版本 -->
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);">
+                            <div class="tool-icon">❤️</div>
+                            <div class="tool-header-text">
+                                <h3>SEL 幼兒園版</h3>
+                                <p>Kindergarten Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為幼兒園教師設計的SEL教學代理人</p>
+                            <ul class="tool-features">
+                                <li>3-6歲適用</li>
+                                <li>遊戲化學習</li>
+                                <li>情緒辨識</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);">
+                            <div class="tool-icon">❤️</div>
+                            <div class="tool-header-text">
+                                <h3>SEL 國小版</h3>
+                                <p>Elementary School Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為國小教師設計的SEL教學代理人</p>
+                            <ul class="tool-features">
+                                <li>6-12歲適用</li>
+                                <li>團隊合作</li>
+                                <li>問題解決</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);">
+                            <div class="tool-icon">❤️</div>
+                            <div class="tool-header-text">
+                                <h3>SEL 高中版</h3>
+                                <p>High School Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為高中教師設計的SEL教學代理人</p>
+                            <ul class="tool-features">
+                                <li>15-18歲適用</li>
+                                <li>生涯規劃</li>
+                                <li>領導力發展</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #ff6b9d 0%, #ffa502 100%);">
+                            <div class="tool-icon">❤️</div>
+                            <div class="tool-header-text">
+                                <h3>SEL 大學版</h3>
+                                <p>University Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為大學教師設計的SEL教學代理人</p>
+                            <ul class="tool-features">
+                                <li>18+適用</li>
+                                <li>社會責任</li>
+                                <li>全球公民</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <!-- SDG 版本 -->
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #00a651 0%, #004d26 100%);">
+                            <div class="tool-icon">🌍</div>
+                            <div class="tool-header-text">
+                                <h3>SDG 幼兒園版</h3>
+                                <p>Kindergarten Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為幼兒園教師設計的SDG教學代理人</p>
+                            <ul class="tool-features">
+                                <li>3-6歲適用</li>
+                                <li>環保意識</li>
+                                <li>社區認識</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #00a651 0%, #004d26 100%);">
+                            <div class="tool-icon">🌍</div>
+                            <div class="tool-header-text">
+                                <h3>SDG 國小版</h3>
+                                <p>Elementary School Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為國小教師設計的SDG教學代理人</p>
+                            <ul class="tool-features">
+                                <li>6-12歲適用</li>
+                                <li>永續行動</li>
+                                <li>全球認識</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #00a651 0%, #004d26 100%);">
+                            <div class="tool-icon">🌍</div>
+                            <div class="tool-header-text">
+                                <h3>SDG 高中版</h3>
+                                <p>High School Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為高中教師設計的SDG教學代理人</p>
+                            <ul class="tool-features">
+                                <li>15-18歲適用</li>
+                                <li>深層分析</li>
+                                <li>社會實踐</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #00a651 0%, #004d26 100%);">
+                            <div class="tool-icon">🌍</div>
+                            <div class="tool-header-text">
+                                <h3>SDG 大學版</h3>
+                                <p>University Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為大學教師設計的SDG教學代理人</p>
+                            <ul class="tool-features">
+                                <li>18+適用</li>
+                                <li>研究導向</li>
+                                <li>政策思考</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <!-- Grammar 版本 -->
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-header-text">
+                                <h3>Grammar 幼兒園版</h3>
+                                <p>Kindergarten Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為幼兒園教師設計的英文基礎工具</p>
+                            <ul class="tool-features">
+                                <li>3-6歲適用</li>
+                                <li>字母與音素</li>
+                                <li>基礎單字</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-header-text">
+                                <h3>Grammar 國小版</h3>
+                                <p>Elementary School Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為國小教師設計的文法教學工具</p>
+                            <ul class="tool-features">
+                                <li>6-12歲適用</li>
+                                <li>基礎文法</li>
+                                <li>句型練習</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-header-text">
+                                <h3>Grammar 高中版</h3>
+                                <p>High School Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為高中教師設計的進階文法工具</p>
+                            <ul class="tool-features">
+                                <li>15-18歲適用</li>
+                                <li>進階文法</li>
+                                <li>寫作訓練</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" style="opacity: 0.7;">
+                        <div class="tool-header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-header-text">
+                                <h3>Grammar 大學版</h3>
+                                <p>University Edition</p>
+                            </div>
+                        </div>
+                        <div class="tool-body">
+                            <p class="tool-desc">為大學教師設計的學術英文工具</p>
+                            <ul class="tool-features">
+                                <li>18+適用</li>
+                                <li>學術寫作</li>
+                                <li>高級文法</li>
+                            </ul>
+                            <span class="status-badge" style="background: #ffb74d; color: white;">⏳ 敬請期待</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer (所有頁面) -->
+            <div class="footer">
+                <div class="footer-text">
+                    <strong>Beta 版本 | Beta Version</strong><br>
+                    首次開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                    <strong style="color: #ff6b6b; font-size: 1.1em;">📅 最後更新：2025年11月14日 14:30 | Last updated: November 14, 2025 14:30</strong>
+                </div>
+
+                <div class="footer-divider"></div>
+
+                <div class="footer-credit">
+                    <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
+                    <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showContent(contentId) {
+            // 隱藏所有內容
+            const allContent = document.querySelectorAll('.content-area');
+            allContent.forEach(content => content.classList.remove('active'));
+
+            // 隱藏所有菜單項目的active
+            const allMenuItems = document.querySelectorAll('.menu-item');
+            allMenuItems.forEach(item => item.classList.remove('active'));
+
+            // 顯示選定的內容
+            document.getElementById(contentId).classList.add('active');
+
+            // 設定菜單項目為active（找到對應的菜單項目）
+            event.target.classList.add('active');
+
+            // 滾動到頂部
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+    </script>
+</body>
+</html>
