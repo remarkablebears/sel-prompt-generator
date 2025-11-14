@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic English Writing AI教學代理人設計器（大學版）| Academic Writing AI Teaching Agent Designer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: linear-gradient(135deg, #e8d5f2 0%, #d1c4e9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: #000;
+            margin-bottom: 30px;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(149, 117, 205, 0.1) 100%);
+            border-left: 4px solid #673ab7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .info-banner strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        .info-banner p {
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .info-banner .divider {
+            height: 1px;
+            background: rgba(103, 58, 183, 0.2);
+            margin: 15px 0;
+        }
+
+        /* 論文類型快速選擇區 */
+        .paper-selector {
+            background: linear-gradient(135deg, rgba(149, 117, 205, 0.15) 0%, rgba(186, 155, 233, 0.15) 100%);
+            border: 2px solid #9575cd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .paper-selector h3 {
+            color: #512da8;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .paper-selector p {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .paper-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .paper-btn {
+            padding: 12px 16px;
+            border: 2px solid #9575cd;
+            background: white;
+            color: #512da8;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .paper-btn:hover {
+            background: #f3e5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(149, 117, 205, 0.2);
+        }
+
+        .paper-btn.active {
+            background: #9575cd;
+            color: white;
+            box-shadow: 0 4px 12px rgba(149, 117, 205, 0.3);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #000;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #9575cd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #000;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        label .en {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: normal;
+            display: block;
+            margin-top: 4px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #9575cd;
+            box-shadow: 0 0 0 3px rgba(149, 117, 205, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .step-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #9575cd;
+            border-radius: 4px;
+        }
+
+        .step-item strong {
+            color: #9575cd;
+        }
+
+        .add-step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-step input {
+            flex: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #9575cd;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #512da8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #000;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .preview-box {
+            background: #f8f9fa;
+            border: 2px solid #9575cd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #9575cd;
+            margin-bottom: 12px;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #000;
+            padding: 30px 20px;
+        }
+
+        .footer-text {
+            font-size: 0.9em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+
+        .footer-credit {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .footer-credit p {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .paper-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        .success-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #9575cd;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .success-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 標題 -->
+        <header>
+            <h1>📝 Academic English Writing AI教學代理人設計器</h1>
+            <p>大學版本 | University Edition</p>
+        </header>
+
+        <!-- 論文類型快速選擇 -->
+        <div class="paper-selector">
+            <h3>🎯 選擇論文寫作類型</h3>
+            <p>點擊下方按鈕快速載入該論文類型的預設內容和指導</p>
+            <div class="paper-grid">
+                <button class="paper-btn" onclick="loadPaperPreset('research')">
+                    <div><strong>研究論文</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Research Paper</div>
+                </button>
+                <button class="paper-btn" onclick="loadPaperPreset('review')">
+                    <div><strong>文獻回顧</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Literature Review</div>
+                </button>
+                <button class="paper-btn" onclick="loadPaperPreset('thesis')">
+                    <div><strong>論文/論著</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Thesis/Dissertation</div>
+                </button>
+                <button class="paper-btn" onclick="loadPaperPreset('essay')">
+                    <div><strong>學術論文</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Academic Essay</div>
+                </button>
+                <button class="paper-btn" onclick="loadPaperPreset('report')">
+                    <div><strong>研究報告</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Research Report</div>
+                </button>
+                <button class="paper-btn" onclick="loadPaperPreset('proposal')">
+                    <div><strong>研究計畫</strong></div>
+                    <div style="font-size: 0.8em; margin-top: 2px; color: inherit;">Research Proposal</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 使用說明 -->
+        <div class="info-banner">
+            <strong>💡 使用步驟 | Usage Steps</strong>
+            <p><strong>第1步：</strong>選擇論文寫作類型快速載入預設內容</p>
+            <p><strong>第2步：</strong>填寫基本資訊，自訂教學規則、工具和寫作流程</p>
+            <p><strong>第3步：</strong>點擊「生成Prompt」預覽AI教學代理人的指令</p>
+            <p><strong>第4步：</strong>複製或下載Prompt到您選擇的AI工具（如Claude、ChatGPT等）</p>
+        </div>
+
+        <!-- 主要表單 -->
+        <div class="main-grid">
+            <!-- 左側：基本設定 -->
+            <div>
+                <!-- 基本設定 -->
+                <div class="section">
+                    <div class="section-title">⚙️ 基本設定 | Basic Settings</div>
+
+                    <!-- 選定的論文類型 -->
+                    <div class="form-group">
+                        <label>
+                            選定的論文類型 <span class="en">Selected Paper Type</span>
+                        </label>
+                        <input type="text" id="selectedPaper" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                    </div>
+
+                    <!-- 目標 -->
+                    <div class="form-group">
+                        <label>
+                            教學目標 <span class="en">Learning Objective</span>
+                        </label>
+                        <textarea id="objective" placeholder="例：幫助研究生掌握學術論文的結構、引用規範和論述技巧"></textarea>
+                    </div>
+
+                    <!-- AI角色名稱 -->
+                    <div class="form-group">
+                        <label>
+                            AI角色名稱 <span class="en">AI Agent Name</span>
+                        </label>
+                        <input type="text" id="agentName" placeholder="例：學術寫作導師、論文編輯顧問">
+                    </div>
+
+                    <!-- 角色描述 -->
+                    <div class="form-group">
+                        <label>
+                            角色描述 <span class="en">Agent Description</span>
+                        </label>
+                        <textarea id="agentDesc" placeholder="例：一位有豐富學術發表經驗的導師，擅長引導研究生理清論文結構、強化論述邏輯、完善引用規範。"></textarea>
+                    </div>
+
+                    <!-- 學科領域 -->
+                    <div class="form-group">
+                        <label>
+                            學科領域 <span class="en">Discipline/Field</span>
+                        </label>
+                        <input type="text" id="discipline" placeholder="例：教育學、社會科學、自然科學、工程、人文">
+                    </div>
+
+                    <!-- 教學資源 -->
+                    <div class="form-group">
+                        <label>
+                            教學資源 <span class="en">Teaching Resources</span>
+                        </label>
+                        <input type="text" id="resources" placeholder="例：論文範本、引用風格指南、寫作檢核表、同儕回饋範例">
+                    </div>
+
+                    <!-- 上課時間 -->
+                    <div class="form-group">
+                        <label>
+                            工作坊時間 <span class="en">Duration</span>
+                        </label>
+                        <input type="text" id="duration" placeholder="例：60-90分鐘">
+                    </div>
+                </div>
+
+                <!-- 規則 -->
+                <div class="section">
+                    <div class="section-title">📋 規則 | Rules</div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule1" checked>
+                            遵循國際學術寫作規範和倫理標準
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule2" checked>
+                            提供清晰的結構指導，幫助理清論點
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule3" checked>
+                            強調論述邏輯和證據支持的重要性
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule4" checked>
+                            示範多種引用風格（APA、MLA、Chicago等）
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule5">
+                            協助修正學術英文表達和用字精準度
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule6">
+                            鼓勵批判性思考和原創思想
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="rule7">
+                            提醒避免常見的學術寫作陷阱
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：學習流程 -->
+            <div>
+                <!-- 工具 -->
+                <div class="section">
+                    <div class="section-title">🛠️ 工具 | Tools</div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool1" checked>
+                            論文結構大綱與組織
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool2" checked>
+                            引用規範檢查與修正
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool3" checked>
+                            論述邏輯分析與改進
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool4">
+                            學術語彙與表達優化
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool5">
+                            寫作檢核清單與自評
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="tool6">
+                            同儕評論與反饋框架
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 學習流程與步驟 -->
+                <div class="section">
+                    <div class="section-title">📚 寫作流程 | Writing Process</div>
+
+                    <div class="add-step">
+                        <input type="text" id="stepInput" placeholder="輸入步驟內容...">
+                        <button class="btn-primary" onclick="addStep()">新增</button>
+                    </div>
+
+                    <div id="stepList" class="step-list">
+                        <div class="step-item">
+                            <strong>Step 1:</strong> 理解論文類型要求與結構
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 2:</strong> 建立論文大綱與主要論點
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 3:</strong> 檢查引用格式與文獻完整性
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 4:</strong> 評估論述邏輯與論證力度
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 5:</strong> 優化學術英文表達與用語精準度
+                        </div>
+                        <div class="step-item">
+                            <strong>Step 6:</strong> 最終檢閱與品質確認
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary" onclick="clearSteps()">清空步驟</button>
+                </div>
+
+                <!-- 預覽 -->
+                <div class="section">
+                    <div class="section-title">👁️ 預覽 | Preview</div>
+
+                    <button class="btn-primary" onclick="generatePrompt()" style="width: 100%; margin-bottom: 15px;">
+                        生成 Prompt
+                    </button>
+
+                    <div class="preview-box">
+                        <div class="preview-title">生成的Prompt：</div>
+                        <div class="preview-content" id="preview">點擊「生成Prompt」以預覽...</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="copyPrompt()">複製</button>
+                        <button class="btn-secondary" onclick="downloadPrompt()">下載</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>Beta 版本 | Beta Version</strong><br>
+                Academic Writing 大學版本開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                最後更新：2025年11月14日 | Last updated: November 14, 2025
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-credit">
+                <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
+                <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div style="font-size: 0.8em; line-height: 1.8; color: #000; text-align: left; background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+                
+                <p style="margin-bottom: 10px;"><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+                <p style="margin-bottom: 10px;">如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+                <p style="margin-bottom: 15px;">本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+
+                <p style="margin-bottom: 10px;"><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+                <p style="margin-bottom: 10px;">If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.</p>
+                <p style="margin-bottom: 10px;">The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.</p>
+
+                <p style="margin-top: 15px; font-weight: 600;">Google雲端連結 | Google Drive Link: 由各場次研習提供，或寄信到團隊信箱由葉教授及團隊共同管理 | Provided by each workshop session, or email our team inbox</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功通知 -->
+    <div class="success-toast" id="successToast"></div>
+
+    <script>
+        let steps = [];
+        let currentPaper = null;
+
+        // 論文類型預設內容
+        const paperPresets = {
+            'research': {
+                name: '研究論文 | Research Paper',
+                objective: '幫助研究生掌握研究論文的標準結構、方法論呈現、結果分析和討論，學習如何有效溝通研究發現',
+                agentName: '研究論文導師',
+                agentDesc: '一位有豐富研究發表經驗的教授，擅長引導學生清楚呈現研究設計、方法、結果和學術貢獻。',
+                discipline: '各學科',
+                resources: '論文範本、方法論指南、統計呈現範例、討論寫作框架',
+                duration: '75-90分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6', 'rule7']
+            },
+            'review': {
+                name: '文獻回顧 | Literature Review',
+                objective: '幫助研究生系統性地整理和批判性分析相關文獻，建立知識框架並識別研究缺口',
+                agentName: '文獻回顧專家',
+                agentDesc: '一位精通文獻綜合和概念架構的學者，幫助學生建立清晰的文獻圖景並進行深層分析。',
+                discipline: '各學科',
+                resources: '文獻組織方法、主題分類架構、綜合分析範例、概念圖工具',
+                duration: '60-75分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            'thesis': {
+                name: '論文/論著 | Thesis/Dissertation',
+                objective: '幫助研究生完成高品質的學位論文，整合所有研究成果，展現學術專業水準',
+                agentName: '學位論文指導員',
+                agentDesc: '一位有豐富指導經驗的學位論文指導教授，協助學生完成高標準的學術著作。',
+                discipline: '各學科',
+                resources: '論文範本、章節組織指南、品質檢核清單、修訂策略',
+                duration: '90-120分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5', 'rule6', 'rule7']
+            },
+            'essay': {
+                name: '學術論文 | Academic Essay',
+                objective: '幫助學生撰寫清晰、有說服力的學術論文，展現批判性思考和論證能力',
+                agentName: '論文寫作教練',
+                agentDesc: '一位擅長引導學生建立論點、組織論據和優化表達的寫作教練。',
+                discipline: '各學科',
+                resources: '論文結構模板、論點發展指南、論述評估框架、修辭技巧',
+                duration: '60-75分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            },
+            'report': {
+                name: '研究報告 | Research Report',
+                objective: '幫助學生撰寫專業的研究報告，清楚呈現研究過程、發現和建議',
+                agentName: '報告撰寫顧問',
+                agentDesc: '一位精通報告撰寫格式和專業溝通的顧問，幫助學生有效傳達研究成果。',
+                discipline: '各學科',
+                resources: '報告結構指南、執行摘要範例、視覺呈現方法、建議制定框架',
+                duration: '60-75分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule5']
+            },
+            'proposal': {
+                name: '研究計畫 | Research Proposal',
+                objective: '幫助研究生撰寫有說服力的研究計畫提案，清楚呈現研究問題、方法和意義',
+                agentName: '研究計畫顧問',
+                agentDesc: '一位有豐富研究申請和計畫評審經驗的專家，協助學生撰寫競爭力強的研究提案。',
+                discipline: '各學科',
+                resources: '計畫提案範本、研究問題陳述指南、方法論說明範例、預期成果框架',
+                duration: '75-90分鐘',
+                rules: ['rule1', 'rule2', 'rule3', 'rule4', 'rule6']
+            }
+        };
+
+        function loadPaperPreset(paperType) {
+            const preset = paperPresets[paperType];
+            if (!preset) return;
+
+            document.getElementById('selectedPaper').value = preset.name;
+            document.getElementById('objective').value = preset.objective;
+            document.getElementById('agentName').value = preset.agentName;
+            document.getElementById('agentDesc').value = preset.agentDesc;
+            document.getElementById('discipline').value = preset.discipline;
+            document.getElementById('resources').value = preset.resources;
+            document.getElementById('duration').value = preset.duration;
+
+            document.querySelectorAll('.checkbox-item input[id^="rule"]').forEach(checkbox => {
+                checkbox.checked = preset.rules.includes(checkbox.id);
+            });
+
+            document.querySelectorAll('.checkbox-item input[id^="tool"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+
+            steps = [
+                '理解論文類型要求與結構',
+                '建立論文大綱與主要論點',
+                '檢查引用格式與文獻完整性',
+                '評估論述邏輯與論證力度',
+                '優化學術英文表達與用語精準度',
+                '最終檢閱與品質確認'
+            ];
+            renderSteps();
+
+            document.querySelectorAll('.paper-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            currentPaper = paperType;
+
+            showToast(`✅ 已載入 ${preset.name} 預設內容！`);
+        }
+
+        function addStep() {
+            const input = document.getElementById('stepInput');
+            if (input.value.trim()) {
+                steps.push(input.value);
+                renderSteps();
+                input.value = '';
+            }
+        }
+
+        function renderSteps() {
+            const list = document.getElementById('stepList');
+            list.innerHTML = '';
+            steps.forEach((step, index) => {
+                const div = document.createElement('div');
+                div.className = 'step-item';
+                div.innerHTML = `
+                    <strong>Step ${index + 1}:</strong> ${step}
+                    <button class="btn-secondary" style="width: 80px; padding: 5px; font-size: 0.8em; margin-top: 8px;" onclick="removeStep(${index})">刪除</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function removeStep(index) {
+            steps.splice(index, 1);
+            renderSteps();
+        }
+
+        function clearSteps() {
+            steps = [];
+            renderSteps();
+        }
+
+        function generatePrompt() {
+            const selectedPaper = document.getElementById('selectedPaper').value;
+            const objective = document.getElementById('objective').value;
+            const agentName = document.getElementById('agentName').value || '教學助手';
+            const agentDesc = document.getElementById('agentDesc').value;
+            const discipline = document.getElementById('discipline').value;
+            const resources = document.getElementById('resources').value;
+            const duration = document.getElementById('duration').value;
+
+            let rulesText = '規則：\n';
+            if (document.getElementById('rule1').checked) rulesText += '1. 遵循國際學術寫作規範和倫理標準\n';
+            if (document.getElementById('rule2').checked) rulesText += '2. 提供清晰的結構指導，幫助理清論點\n';
+            if (document.getElementById('rule3').checked) rulesText += '3. 強調論述邏輯和證據支持的重要性\n';
+            if (document.getElementById('rule4').checked) rulesText += '4. 示範多種引用風格（APA、MLA、Chicago等）\n';
+            if (document.getElementById('rule5').checked) rulesText += '5. 協助修正學術英文表達和用字精準度\n';
+            if (document.getElementById('rule6').checked) rulesText += '6. 鼓勵批判性思考和原創思想\n';
+            if (document.getElementById('rule7').checked) rulesText += '7. 提醒避免常見的學術寫作陷阱\n';
+
+            let toolsText = '教學工具與方法：\n';
+            if (document.getElementById('tool1').checked) toolsText += '- 論文結構大綱與組織\n';
+            if (document.getElementById('tool2').checked) toolsText += '- 引用規範檢查與修正\n';
+            if (document.getElementById('tool3').checked) toolsText += '- 論述邏輯分析與改進\n';
+            if (document.getElementById('tool4').checked) toolsText += '- 學術語彙與表達優化\n';
+            if (document.getElementById('tool5').checked) toolsText += '- 寫作檢核清單與自評\n';
+            if (document.getElementById('tool6').checked) toolsText += '- 同儕評論與反饋框架\n';
+
+            let stepsText = '寫作流程與步驟：\n';
+            steps.forEach((step, index) => {
+                stepsText += `Step ${index + 1}: ${step}\n`;
+            });
+
+            const prompt = `
+【Academic English Writing AI教學代理人設計 - 大學版本】
+
+【目標與角色】
+論文類型：${selectedPaper}
+教學目標：${objective}
+AI角色：${agentName}
+${agentDesc ? `角色描述：${agentDesc}` : ''}
+學科領域：${discipline}
+
+這是一個幫助研究生和學者進行學術英文寫作的AI教學代理人，旨在通過結構指導、引用規範、論述強化和表達優化等方式，幫助提升學術寫作品質。請完全使用繁體中文進行互動。
+
+【教學背景】
+學習對象：大學研究生和青年學者
+教學資源：${resources}
+預計時間：${duration}
+
+【${rulesText}】
+
+【${toolsText}】
+
+【${stepsText}】
+
+【教學方式】
+- 每次進行一個步驟，等待用戶回應後再進行下一步
+- 提供具體的結構建議和格式範例
+- 檢查引用規範，提醒常見錯誤
+- 分析論述邏輯，提出改進建議
+- 協助優化學術英文表達
+- 根據用戶的進度和需求動態調整
+- 提供鼓勵和建設性反饋
+
+請根據上述設定進行教學。
+            `;
+
+            document.getElementById('preview').textContent = prompt.trim();
+            showToast('✅ Prompt已生成！');
+        }
+
+        function copyPrompt() {
+            const preview = document.getElementById('preview');
+            navigator.clipboard.writeText(preview.textContent).then(() => {
+                showToast('✅ 已複製到剪貼板！');
+            });
+        }
+
+        function downloadPrompt() {
+            const preview = document.getElementById('preview');
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(preview.textContent));
+            element.setAttribute('download', 'Academic_Writing_AI教學_大學版.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showToast('✅ 已下載Prompt！');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        window.addEventListener('load', () => {
+            renderSteps();
+        });
+    </script>
+</body>
+</html>
