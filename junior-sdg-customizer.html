@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國中SDG班級客製Prompt生成器 | Middle School SDG Customized Prompt Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: #F5F5F5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .left-panel, .right-panel {
+            padding: 40px;
+            overflow-y: auto;
+            max-height: 90vh;
+            background: #FAFAFA;
+        }
+
+        .right-panel {
+            background: white;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .form-label-en {
+            display: block;
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #212121;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #666;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .section-header {
+            background: #F0F0F0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 25px 0 15px 0;
+            font-weight: 700;
+            color: #212121;
+            font-size: 15px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #F5F5F5;
+            border-color: #999;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-generate {
+            background: #333;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background: #555;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-copy, .btn-download {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .btn-copy:hover, .btn-download:hover {
+            background: #F5F5F5;
+        }
+
+        #preview {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #212121;
+            font-family: 'Courier New', monospace;
+            min-height: 400px;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        .footer {
+            grid-column: 1 / -1;
+            padding: 30px 40px;
+            background: #F5F5F5;
+            border-top: 1px solid #DDD;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #DDD;
+            margin: 20px 0;
+        }
+
+        .footer-credit {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .footer-credit p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel, .right-panel {
+                max-height: none;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel: Form -->
+        <div class="left-panel">
+            <header>
+                <div class="title">🌍 國中SDG班級客製Prompt生成器</div>
+                <div class="subtitle">Customized Middle School SDG Prompt Generator</div>
+            </header>
+
+            <form id="designForm">
+                <div class="section-header">📋 班級檔案 | Class Profile</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        班級名稱 | Class Name
+                        <span class="form-label-en">e.g., 七年級A班 / Grade 7 Class A</span>
+                    </label>
+                    <input type="text" id="className" placeholder="例：七年級A班" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        班級人數 | Class Size
+                        <span class="form-label-en"></span>
+                    </label>
+                    <input type="number" id="classSize" min="10" max="40" placeholder="例：30人" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        班級特徵 | Student Characteristics (複選)
+                        <span class="form-label-en">Select all that apply</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="active" name="characteristic" value="需要多動與變化刺激的同學">
+                            <label for="active">🔴 活潑好動/需要多變化</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="emotion" name="characteristic" value="情感表達需要更多支持的同學">
+                            <label for="emotion">💙 情感表達較敏感</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fast" name="characteristic" value="學習進度快、思考深入的同學">
+                            <label for="fast">⭐ 學習進度快</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="slow" name="characteristic" value="需要更多時間理解與實踐的同學">
+                            <label for="slow">📖 學習節奏較緩</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quiet" name="characteristic" value="較為內向、需要時間醞釀的同學">
+                            <label for="quiet">🤐 較為內向安靜</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="structure" name="characteristic" value="需要更明確引導與結構的同學">
+                            <label for="structure">⚠️ 需要清晰引導</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="stable" name="characteristic" value="班級整體穩定、學習動力足">
+                            <label for="stable">✨ 班級穩定正常</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rural" name="characteristic" value="位於偏鄉地區、資源較有限">
+                            <label for="rural">🌄 偏鄉地區</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        學習風格 | Learning Styles (可複選)
+                        <span class="form-label-en"></span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="visual" name="style" value="視覺型">
+                            <label for="visual">👁️ 視覺型</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="auditory" name="style" value="聽覺型">
+                            <label for="auditory">👂 聽覺型</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kinesthetic" name="style" value="動覺型">
+                            <label for="kinesthetic">🏃 動覺型</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">🎯 今天的課 | Today's Lesson</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        SDG目標 | SDG Goal
+                        <span class="form-label-en"></span>
+                    </label>
+                    <select id="sdgGoal" required>
+                        <option value="">選擇目標 | Select Goal</option>
+                        <option value="SDG 1 消除貧困">SDG 1 消除貧困 | No Poverty</option>
+                        <option value="SDG 2 消除飢餓">SDG 2 消除飢餓 | Zero Hunger</option>
+                        <option value="SDG 3 良好健康">SDG 3 良好健康 | Good Health</option>
+                        <option value="SDG 4 優質教育">SDG 4 優質教育 | Quality Education</option>
+                        <option value="SDG 5 性別平等">SDG 5 性別平等 | Gender Equality</option>
+                        <option value="SDG 6 清潔用水">SDG 6 清潔用水 | Clean Water</option>
+                        <option value="SDG 7 永續能源">SDG 7 永續能源 | Affordable Energy</option>
+                        <option value="SDG 8 經濟成長">SDG 8 經濟成長 | Decent Work</option>
+                        <option value="SDG 10 減少不平等">SDG 10 減少不平等 | Reduced Inequalities</option>
+                        <option value="SDG 13 氣候行動">SDG 13 氣候行動 | Climate Action</option>
+                        <option value="SDG 16 和平正義">SDG 16 和平正義 | Peace & Justice</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        英語課程主題 | English Lesson Topic
+                        <span class="form-label-en">e.g., 環境保護、社會責任</span>
+                    </label>
+                    <input type="text" id="englishTopic" placeholder="例：環境保護、社會責任、全球合作" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        教學策略 | Teaching Strategy
+                        <span class="form-label-en"></span>
+                    </label>
+                    <select id="strategy" required>
+                        <option value="">選擇策略 | Select Strategy</option>
+                        <option value="影片討論">🎬 影片討論 | Video Discussion</option>
+                        <option value="新聞分析">📰 新聞分析 | News Analysis</option>
+                        <option value="案例研究">📋 案例研究 | Case Study</option>
+                        <option value="辯論活動">🗣️ 辯論活動 | Debate</option>
+                        <option value="實踐專案">🛠️ 實踐專案 | Action Project</option>
+                        <option value="角色扮演">🎭 角色扮演 | Role-play</option>
+                        <option value="小組研究">👥 小組研究 | Group Research</option>
+                        <option value="訪談與故事">🎤 訪談與故事 | Interviews & Stories</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        課程內容 | Course Content
+                        <span class="form-label-en">貼教案、課綱、或課程重點</span>
+                    </label>
+                    <textarea id="courseContent" placeholder="貼上教案內容或課程重點..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        課堂時長 | Class Duration
+                        <span class="form-label-en"></span>
+                    </label>
+                    <select id="duration" required>
+                        <option value="">選擇時長 | Select Duration</option>
+                        <option value="45分鐘">45分鐘 | 45 minutes</option>
+                        <option value="90分鐘">90分鐘 | 90 minutes</option>
+                        <option value="其他">其他 | Other</option>
+                    </select>
+                </div>
+
+                <div class="section-header">⭐ 特殊需求 | Special Notes</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        今天的特殊狀況 | Today's Special Circumstances
+                        <span class="form-label-en">e.g., 時事相關、班級特別興趣</span>
+                    </label>
+                    <textarea id="specialNeeds" placeholder="例：今天有新聞事件想討論；班級特別關心某個議題"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-generate" onclick="generatePrompt()">📝 生成 | Generate</button>
+                    <button type="button" class="btn-copy" onclick="copyToClipboard()">📋 複製 | Copy</button>
+                    <button type="button" class="btn-download" onclick="downloadPrompt()">⬇️ 下載 | Download</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Panel: Preview -->
+        <div class="right-panel">
+            <header>
+                <div class="title">✨ 生成的Prompt預覽</div>
+                <div class="subtitle">Generated Prompt Preview - 可直接貼進Claude/Gemini</div>
+            </header>
+            <div id="preview">點擊「生成」開始 | Click Generate to start...</div>
+        </div>
+
+        <!-- Copy Feedback -->
+        <div id="copyFeedback" class="copy-feedback">✅ 已複製 | Copied!</div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>Beta 版本 | Beta Version</strong><br>
+                首次開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                最後更新：2025年11月14日 | Last updated: November 14, 2025
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-credit">
+                <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
+                <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div style="font-size: 0.8em; line-height: 1.8; color: #000; text-align: left; background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+                
+                <p style="margin-bottom: 10px;"><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+                <p style="margin-bottom: 10px;">如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+                <p style="margin-bottom: 15px;">本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+
+                <p style="margin-bottom: 10px;"><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+                <p style="margin-bottom: 10px;">If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We'll provide workshop-specific Google Drive links and detailed instructions.</p>
+                <p style="margin-bottom: 15px;">The copyright of design content created with this tool belongs to the designer. This platform is provided for practicing and refining ideas. Designers should ensure copyright respect and commercial use is not recommended. We welcome knowledge sharing and exchange among teachers.</p>
+
+                <p style="margin-top: 20px;">Google Drive Link: Provided by each workshop session, or email our team inbox managed by Prof. Yeh and her team: <strong>remarkablebears@gmail.com</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPrompt = '';
+
+        function generatePrompt() {
+            const className = document.getElementById('className').value;
+            const classSize = document.getElementById('classSize').value;
+            const characteristics = Array.from(document.querySelectorAll('input[name="characteristic"]:checked')).map(el => el.value);
+            const styles = Array.from(document.querySelectorAll('input[name="style"]:checked')).map(el => el.value);
+            const sdgGoal = document.getElementById('sdgGoal').value;
+            const englishTopic = document.getElementById('englishTopic').value;
+            const strategy = document.getElementById('strategy').value;
+            const courseContent = document.getElementById('courseContent').value;
+            const duration = document.getElementById('duration').value;
+            const specialNeeds = document.getElementById('specialNeeds').value;
+
+            const prompt = `【${className} - SDG英文課 AI機器人 Prompt】
+
+【班級檔案】
+
+班級名稱：${className}
+班級人數：${classSize}人
+
+班級特徵：
+${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\n') : '• 班級特徵多元'}
+
+班級學習風格：
+${styles.length > 0 ? styles.map(s => `• ${s}`).join('\n') : '• 多元混合'}
+
+【今天的課程】
+
+永續發展目標：${sdgGoal}
+英語課程主題：${englishTopic}
+教學策略：${strategy}
+課堂時長：${duration}
+
+【課程內容】
+${courseContent}
+
+【特殊狀況】
+${specialNeeds || '無'}
+
+【你的角色】
+
+你是${className}的SDG英文學習助手。你的目標是幫助學生：
+1. 用英文理解和討論永續發展議題（${sdgGoal}）
+2. 培養全球公民意識和責任感
+3. 根據班級特徵提供適切的學習支持
+4. 激發學生的批判思考和行動力
+
+【班級特徵調整】
+
+${generateCharacteristicAdjustments(characteristics)}
+
+【學習風格調整】
+
+${generateStyleAdjustments(styles)}
+
+【教學策略實踐】
+
+根據今天選擇的「${strategy}」策略：
+${generateStrategyGuidance(strategy)}
+
+【互動規則】
+
+1. 用清晰、親切的英文進行討論（CEFR A1-A2+程度）
+2. 鼓勵學生用英文表達想法，中文補充可以
+3. 重視批判思考而非單一答案
+4. 連結學生生活與全球議題
+5. 根據班級特徵調整討論深度和進度
+6. 營造安全、尊重多元觀點的學習氛圍
+
+【課程流程】
+
+開場（5分鐘）：
+- 溫暖問候，介紹SDG議題與今天的主題
+- 激發學生對${englishTopic}的初步想法
+
+主要活動（${duration === '45分鐘' ? '30-35' : duration === '90分鐘' ? '60-75' : '根據實際時間'}分鐘）：
+- 用「${strategy}」策略進行${sdgGoal}的探索
+- 引導學生思考、分析、表達
+- 連結個人生活與全球責任
+- 根據班級特徵彈性調整
+
+結尾（5-10分鐘）：
+- 統整學習重點和全球視野
+- 鼓勵學生思考個人能做的貢獻
+- 肯定多元想法和見解
+
+---
+
+現在開始根據上述設定進行教學。記住：**用英文開啟學生對永續發展的認識，培養他們的全球公民意識**。`;
+
+            currentPrompt = prompt;
+            displayPrompt(prompt);
+        }
+
+        function generateCharacteristicAdjustments(characteristics) {
+            const adjustments = {
+                '需要多動與變化刺激的同學': '• 變化活動形式，保持高互動度\n• 提供即時回饋和成就感\n• 鼓勵他們的領導力和熱情',
+                '情感表達需要更多支持的同學': '• 建立安全、接納的討論環境\n• 尊重不同的想法和感受\n• 提供充足的表達空間',
+                '學習進度快、思考深入的同學': '• 提供更深層的思考和複雜議題\n• 邀請他們深化分析和提出建議\n• 認可他們的見解貢獻',
+                '需要更多時間理解與實踐的同學': '• 給予充足時間進行思考和表達\n• 提供具體例子和視覺化支援\n• 肯定每一步的理解進度',
+                '較為內向、需要時間醞釀的同學': '• 提供充足思考時間，不倉促回應\n• 尊重他們的表達步調\n• 提供小組或一對一分享機會',
+                '需要更明確引導與結構的同學': '• 提供清晰的討論架構和步驟\n• 設定具體的任務和期望\n• 認可他們的進步和貢獻',
+                '班級整體穩定、學習動力足': '• 班級學習動力佳，可深化議題探討\n• 鼓勵同儕間的知識交流\n• 創造合作學習的氛圍',
+                '位於偏鄉地區、資源較有限': '• 善用在地社區和生活經驗\n• 充分利用數位工具進行國際連結\n• 重視本地與全球的連動關係'
+            };
+
+            return characteristics.length > 0 
+                ? characteristics.map(c => adjustments[c] || c).join('\n\n') 
+                : '• 班級特徵多元，建議採用混合討論策略';
+        }
+
+        function generateStyleAdjustments(styles) {
+            const adjustments = {
+                '視覺型': '• 使用圖片、影片、圖表、統計資料\n• 視覺化SDG目標和全球議題',
+                '聽覺型': '• 進行對話、討論、分享\n• 聆聽不同觀點和故事',
+                '動覺型': '• 納入實踐活動和行動方案\n• 探討可行的改變行動'
+            };
+
+            return styles.map(s => adjustments[s] || s).join('\n\n') || '• 多元混合：結合視覺、聽覺、動覺的教學方式';
+        }
+
+        function generateStrategyGuidance(strategy) {
+            const guidance = {
+                '🎬 影片討論 | Video Discussion': '• 選擇與SDG議題相關的英文影片\n• 引導學生觀察和分析\n• 深化對全球議題的理解',
+                '📰 新聞分析 | News Analysis': '• 使用國際新聞或當地案例\n• 培養批判性思考\n• 連結時事與SDG目標',
+                '📋 案例研究 | Case Study': '• 分析真實的SDG相關案例\n• 探討不同角度和解決方案\n• 思考本地應用',
+                '🗣️ 辯論活動 | Debate': '• 設定SDG相關的辯題\n• 鼓勵多元觀點的表達\n• 培養批判和溝通能力',
+                '🛠️ 實踐專案 | Action Project': '• 設計與SDG相關的實踐活動\n• 鼓勵學生提出改變方案\n• 培養行動力和責任感',
+                '🎭 角色扮演 | Role-play': '• 設定與SDG相關的情景\n• 體驗不同角度和立場\n• 深化議題的理解',
+                '👥 小組研究 | Group Research': '• 分組研究SDG相關議題\n• 進行同儕學習和知識分享\n• 培養合作和表達能力',
+                '🎤 訪談與故事 | Interviews & Stories': '• 收集相關人物的故事和經驗\n• 聆聽真實聲音\n• 建立同理心和全球連結'
+            };
+
+            return guidance[strategy] || strategy;
+        }
+
+        function displayPrompt(prompt) {
+            const previewDiv = document.getElementById('preview');
+            previewDiv.textContent = prompt;
+        }
+
+        function copyToClipboard() {
+            if (!currentPrompt) {
+                alert('請先生成 Prompt | Please generate prompt first');
+                return;
+            }
+
+            navigator.clipboard.writeText(currentPrompt).then(() => {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                alert('複製失敗，請手動複製 | Copy failed, please copy manually');
+            });
+        }
+
+        function downloadPrompt() {
+            if (!currentPrompt) {
+                alert('請先生成 Prompt | Please generate prompt first');
+                return;
+            }
+
+            const className = document.getElementById('className').value || 'SDG_Prompt';
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(currentPrompt));
+            element.setAttribute('download', `${className}_SDG_Prompt_${new Date().getTime()}.txt`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>

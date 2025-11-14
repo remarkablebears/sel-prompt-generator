@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國中SEL班級客製Prompt生成器 | Middle School SEL Customized Prompt Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: #F5F5F5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .left-panel, .right-panel {
+            padding: 40px;
+            overflow-y: auto;
+            max-height: 90vh;
+            background: #FAFAFA;
+        }
+
+        .right-panel {
+            background: white;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .form-label-en {
+            display: block;
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #212121;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #666;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .section-header {
+            background: #F0F0F0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 25px 0 15px 0;
+            font-weight: 700;
+            color: #212121;
+            font-size: 15px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #F5F5F5;
+            border-color: #999;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-generate {
+            background: #333;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background: #555;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-copy, .btn-download {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .btn-copy:hover, .btn-download:hover {
+            background: #F5F5F5;
+        }
+
+        #preview {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #212121;
+            font-family: 'Courier New', monospace;
+            min-height: 400px;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        .footer {
+            grid-column: 1 / -1;
+            padding: 30px 40px;
+            background: #F5F5F5;
+            border-top: 1px solid #DDD;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #DDD;
+            margin: 20px 0;
+        }
+
+        .footer-credit {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .footer-credit p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel, .right-panel {
+                max-height: none;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel: Form -->
+        <div class="left-panel">
+            <header>
+                <div class="title">📚 國中SEL班級客製Prompt生成器</div>
+                <div class="subtitle">Customized Middle School SEL Prompt Generator</div>
+            </header>
+
+            <form id="designForm">
+                <div class="section-header">📋 班級檔案 | Class Profile</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        班級名稱 | Class Name
+                        <span class="form-label-en">e.g., 七年級A班 / Grade 7 Class A</span>
+                    </label>
+                    <input type="text" id="className" placeholder="例：七年級A班" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        班級人數 | Class Size
+                        <span class="form-label-en"></span>
+                    </label>
+                    <input type="number" id="classSize" min="10" max="40" placeholder="例：30人" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        班級特徵 | Student Characteristics (複選)
+                        <span class="form-label-en">Select all that apply</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="adhd" name="characteristic" value="需要多動與變化刺激的同學">
+                            <label for="adhd">🔴 活潑好動/需要多變化</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="emotion" name="characteristic" value="情感表達需要更多支持的同學">
+                            <label for="emotion">💙 情感表達較敏感</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="gifted" name="characteristic" value="學習進度快、思考深入的同學">
+                            <label for="gifted">⭐ 學習進度快</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="language" name="characteristic" value="需要更多時間理解與實踐的同學">
+                            <label for="language">📖 學習節奏較緩</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="shy" name="characteristic" value="較為內向、需要時間醞釀的同學">
+                            <label for="shy">🤐 較為內向安靜</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="behavior" name="characteristic" value="需要更明確引導與結構的同學">
+                            <label for="behavior">⚠️ 需要清晰引導</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="normal" name="characteristic" value="班級整體穩定、學習動力足">
+                            <label for="normal">✨ 班級穩定正常</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rural" name="characteristic" value="位於偏鄉地區、資源較有限">
+                            <label for="rural">🌄 偏鄉地區</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        學習風格 | Learning Styles (可複選)
+                        <span class="form-label-en"></span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="visual" name="style" value="視覺型">
+                            <label for="visual">👁️ 視覺型</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="auditory" name="style" value="聽覺型">
+                            <label for="auditory">👂 聽覺型</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kinesthetic" name="style" value="動覺型">
+                            <label for="kinesthetic">🏃 動覺型</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">🎯 今天的課 | Today's Lesson</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        SEL主題 | SEL Topic
+                        <span class="form-label-en"></span>
+                    </label>
+                    <select id="selTopic" required>
+                        <option value="">選擇主題 | Select Topic</option>
+                        <option value="自我覺察">自我覺察 | Self-Awareness</option>
+                        <option value="自我管理">自我管理 | Self-Management</option>
+                        <option value="社會覺察">社會覺察 | Social Awareness</option>
+                        <option value="人際關係">人際關係 | Relationship Skills</option>
+                        <option value="負責任決策">負責任決策 | Responsible Decision-Making</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        英語課程主題 | English Lesson Topic
+                        <span class="form-label-en">e.g., 情緒表達、家庭關係</span>
+                    </label>
+                    <input type="text" id="englishTopic" placeholder="例：情緒表達、家庭關係、校園生活" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        教學策略 | Teaching Strategy
+                        <span class="form-label-en"></span>
+                    </label>
+                    <select id="strategy" required>
+                        <option value="">選擇策略 | Select Strategy</option>
+                        <option value="歌詞教學">🎵 歌詞教學 | Song-based Learning</option>
+                        <option value="英文寫作">✍️ 英文寫作 | English Writing</option>
+                        <option value="角色扮演">🎭 角色扮演 | Role-play</option>
+                        <option value="對話練習">💬 對話練習 | Conversation Practice</option>
+                        <option value="遊戲化學習">🎲 遊戲化學習 | Gamification</option>
+                        <option value="視覺化工具">📊 視覺化工具 | Visualization</option>
+                        <option value="小組討論">👥 小組討論 | Group Discussion</option>
+                        <option value="案例分析">📋 案例分析 | Case Study</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        課程內容 | Course Content
+                        <span class="form-label-en">貼教案、課綱、或課程重點 | Paste lesson plan or key points</span>
+                    </label>
+                    <textarea id="courseContent" placeholder="貼上教案內容或課程重點..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        課堂時長 | Class Duration
+                        <span class="form-label-en"></span>
+                    </label>
+                    <select id="duration" required>
+                        <option value="">選擇時長 | Select Duration</option>
+                        <option value="45分鐘">45分鐘 | 45 minutes</option>
+                        <option value="90分鐘">90分鐘 | 90 minutes</option>
+                        <option value="其他">其他 | Other</option>
+                    </select>
+                </div>
+
+                <div class="section-header">⭐ 特殊需求 | Special Notes</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        今天的特殊狀況 | Today's Special Circumstances
+                        <span class="form-label-en">e.g., 某同學今天情緒較差，某同學請假</span>
+                    </label>
+                    <textarea id="specialNeeds" placeholder="例：小明今天情緒較差，需多照顧；小花因故請假"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-generate" onclick="generatePrompt()">📝 生成 | Generate</button>
+                    <button type="button" class="btn-copy" onclick="copyToClipboard()">📋 複製 | Copy</button>
+                    <button type="button" class="btn-download" onclick="downloadPrompt()">⬇️ 下載 | Download</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Panel: Preview -->
+        <div class="right-panel">
+            <header>
+                <div class="title">✨ 生成的Prompt預覽</div>
+                <div class="subtitle">Generated Prompt Preview - 可直接貼進Claude/Gemini</div>
+            </header>
+            <div id="preview">點擊「生成」開始 | Click Generate to start...</div>
+        </div>
+
+        <!-- Copy Feedback -->
+        <div id="copyFeedback" class="copy-feedback">✅ 已複製 | Copied!</div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>Beta 版本 | Beta Version</strong><br>
+                首次開發時間：2025年11月 (與 Claude.ai 共構) | First co-developed with Claude.ai, November 2025<br>
+                最後更新：2025年11月14日 | Last updated: November 14, 2025
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-credit">
+                <p>國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025</p>
+                <p>Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025</p>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div style="font-size: 0.8em; line-height: 1.8; color: #000; text-align: left; background: #f5f5f5; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+                
+                <p style="margin-bottom: 10px;"><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+                <p style="margin-bottom: 10px;">如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+                <p style="margin-bottom: 15px;">本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+
+                <p style="margin-bottom: 10px;"><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+                <p style="margin-bottom: 10px;">If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We'll provide workshop-specific Google Drive links and detailed instructions.</p>
+                <p style="margin-bottom: 15px;">The copyright of design content created with this tool belongs to the designer. This platform is provided for practicing and refining ideas. Designers should ensure copyright respect and commercial use is not recommended. We welcome knowledge sharing and exchange among teachers.</p>
+
+                <p style="margin-top: 20px;">Google Drive Link: Provided by each workshop session, or email our team inbox managed by Prof. Yeh and her team: <strong>remarkablebears@gmail.com</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPrompt = '';
+
+        function generatePrompt() {
+            const className = document.getElementById('className').value;
+            const classSize = document.getElementById('classSize').value;
+            const characteristics = Array.from(document.querySelectorAll('input[name="characteristic"]:checked')).map(el => el.value);
+            const styles = Array.from(document.querySelectorAll('input[name="style"]:checked')).map(el => el.value);
+            const selTopic = document.getElementById('selTopic').value;
+            const englishTopic = document.getElementById('englishTopic').value;
+            const strategy = document.getElementById('strategy').value;
+            const courseContent = document.getElementById('courseContent').value;
+            const duration = document.getElementById('duration').value;
+            const specialNeeds = document.getElementById('specialNeeds').value;
+
+            const prompt = `【${className} - SEL英文課 AI機器人 Prompt】
+
+【班級檔案】
+
+班級名稱：${className}
+班級人數：${classSize}人
+
+班級特徵：
+${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\n') : '• 無特殊需求'}
+
+班級學習風格：
+${styles.length > 0 ? styles.map(s => `• ${s}`).join('\n') : '• 多元混合'}
+
+【今天的課程】
+
+SEL學習主題：${selTopic}
+英語課程主題：${englishTopic}
+教學策略：${strategy}
+課堂時長：${duration}
+
+【課程內容】
+${courseContent}
+
+【特殊狀況】
+${specialNeeds || '無'}
+
+【你的角色】
+
+你是${className}的SEL英文學習助手。你的目標是幫助學生在輕鬆、安全、有趣的環境中：
+1. 用英文學習和表達SEL相關主題（${selTopic}）
+2. 根據班級特徵調整互動方式
+3. 鼓勵並支持不同學習風格的學生
+
+【班級特徵調整】
+
+${generateCharacteristicAdjustments(characteristics)}
+
+【學習風格調整】
+
+${generateStyleAdjustments(styles)}
+
+【教學策略實踐】
+
+根據今天選擇的「${strategy}」策略：
+${generateStrategyGuidance(strategy)}
+
+【互動規則】
+
+1. 用簡單、清晰的英文和學生對話（CEFR A1-A2程度）
+2. 如果學生用中文回應，可以接受，但鼓勵用英文
+3. 不做語法糾正，重點在理解和表達
+4. 提供鼓勵和正面反饋
+5. 根據班級特徵，調整節奏和耐心程度
+6. 如有學生情緒波動，先停下學習，提供情感支持
+
+【課程流程】
+
+開場（5分鐘）：
+- 溫暖問候，介紹今天的主題
+- 激發學生對${englishTopic}的興趣
+
+主要活動（${duration === '45分鐘' ? '30-35' : duration === '90分鐘' ? '60-75' : '根據實際時間'}分鐘）：
+- 用「${strategy}」策略進行${selTopic}的探索
+- 引導學生思考、表達、分享
+- 根據班級特徵彈性調整
+
+結尾（5-10分鐘）：
+- 統整學習重點
+- 鼓勵學生將今天所學帶到日常生活
+
+---
+
+現在開始根據上述設定進行教學。記住：**你的首要任務是讓每位學生都感到被看見、被支持、被鼓勵**，其次才是英語和SEL的內容教授。`;
+
+            currentPrompt = prompt;
+            displayPrompt(prompt);
+        }
+
+        function generateCharacteristicAdjustments(characteristics) {
+            const adjustments = {
+                '需要多動與變化刺激的同學': '• 保持活動多樣化，定期變換教學方式\n• 提供即時的反饋和成就感\n• 鼓勵他們的動能和領導力',
+                '情感表達需要更多支持的同學': '• 建立安全、接納的學習環境\n• 鼓勵多元的情感表達方式\n• 提供充足的時間和空間分享',
+                '學習進度快、思考深入的同學': '• 提供更深層次的思考題和挑戰\n• 邀請他們擔任小幫手或分享想法\n• 營造互相學習的機會',
+                '需要更多時間理解與實踐的同學': '• 給予充足的時間和重複機會\n• 提供具體的例子和視覺化支援\n• 肯定每一步的進步',
+                '較為內向、需要時間醞釀的同學': '• 提供充足的思考時間\n• 尊重他們的自身步調\n• 提供一對一或小組分享機會',
+                '需要更明確引導與結構的同學': '• 提供清晰的期望和步驟\n• 設計結構化的活動\n• 立即認可和鼓勵他們的進步',
+                '班級整體穩定、學習動力足': '• 班級整體學習動力佳，可維持標準教學節奏\n• 鼓勵同儕協作和互相學習\n• 創造群體的共學氛圍',
+                '位於偏鄉地區、資源較有限': '• 善用在地資源和生活情境\n• 充分利用數位工具進行教學\n• 重視社區連結與在地知識'
+            };
+
+            return characteristics.length > 0 
+                ? characteristics.map(c => adjustments[c] || c).join('\n\n') 
+                : '• 班級特徵多元，建議採用混合教學策略，照顧不同學習需求';
+        }
+
+        function generateStyleAdjustments(styles) {
+            const adjustments = {
+                '視覺型': '• 使用圖片、影片、圖表、視覺化概念\n• 用顏色和圖示輔助理解',
+                '聽覺型': '• 多用對話和討論\n• 可配搭音樂或節奏\n• 鼓勵口頭表達',
+                '動覺型': '• 納入身體活動和實踐操作\n• 讓學生有移動的機會\n• 透過做中學'
+            };
+
+            return styles.map(s => adjustments[s] || s).join('\n\n') || '• 多元混合：結合視覺、聽覺、動覺的教學方式';
+        }
+
+        function generateStrategyGuidance(strategy) {
+            const guidance = {
+                '🎵 歌詞教學 | Song-based Learning': '• 選擇與SEL主題相關的英文歌\n• 分析歌詞中的情感和訊息\n• 學生討論如何用歌詞表達自己的感受',
+                '✍️ 英文寫作 | English Writing': '• 引導學生用英文寫下真實或虛構的情感故事\n• 可以是日記、短故事、或角色描述\n• 鼓勵自由表達，不批評拼字或文法',
+                '🎭 角色扮演 | Role-play': '• 創設與英語課程主題相關的情景\n• 學生扮演不同角色進行對話\n• 帶出SEL反思的時刻',
+                '💬 對話練習 | Conversation Practice': '• 進行引導式對話，帶入SEL問題\n• 學生用英文表達想法和感受\n• 建立安全、非評判的對話環境',
+                '🎲 遊戲化學習 | Gamification': '• 設計與SEL主題相關的英文遊戲\n• 透過遊戲規則引發思考\n• 提供成就感和競爭樂趣',
+                '📊 視覺化工具 | Visualization': '• 用思維導圖、情緒輪盤、或曼陀羅協助學生組織想法\n• 搭配英文標籤和說明\n• 視覺化抽象的SEL概念',
+                '👥 小組討論 | Group Discussion': '• 分小組討論SEL相關的問題\n• 各組用英文報告想法\n• 建立同儕學習的氛圍',
+                '📋 案例分析 | Case Study': '• 呈現真實或虛構的案例\n• 學生用英文分析角色的情感和決策\n• 思考在自己生活中的應用'
+            };
+
+            return guidance[strategy] || strategy;
+        }
+
+        function displayPrompt(prompt) {
+            const previewDiv = document.getElementById('preview');
+            previewDiv.textContent = prompt;
+        }
+
+        function copyToClipboard() {
+            if (!currentPrompt) {
+                alert('請先生成 Prompt | Please generate prompt first');
+                return;
+            }
+
+            navigator.clipboard.writeText(currentPrompt).then(() => {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                alert('複製失敗，請手動複製 | Copy failed, please copy manually');
+            });
+        }
+
+        function downloadPrompt() {
+            if (!currentPrompt) {
+                alert('請先生成 Prompt | Please generate prompt first');
+                return;
+            }
+
+            const className = document.getElementById('className').value || 'SEL_Prompt';
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(currentPrompt));
+            element.setAttribute('download', `${className}_SEL_Prompt_${new Date().getTime()}.txt`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
