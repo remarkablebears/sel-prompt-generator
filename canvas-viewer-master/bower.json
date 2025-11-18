@@ -1,0 +1,38 @@
+{
+  "name": "canvas-viewer",
+  "authors": [
+    "Hunt Nguyen <hunguyenv@gmail.com>"
+  ],
+  "description": "Images, Tiff and PDF Canvas viewer",
+  "main": [
+    "src/canvas-viewer.js",
+    "src/canvas-viewer.css"
+  ],
+  "moduleType": [],
+  "keywords": [
+    "angularjs",
+    "canvas",
+    "material",
+    "image",
+    "viewer",
+    "tiff",
+    "viewer",
+    "pdf",
+    "viewer"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/spsvn/canvas-viewer",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "latest",
+    "FormatReader": "latest",
+    "spsvn-tiffjs": "latest",
+    "pdfjs-dist": "latest"
+  }
+}
