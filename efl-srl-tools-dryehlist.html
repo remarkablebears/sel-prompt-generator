@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>國中老師 AI 工具資訊圖表懶人包</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #020617;
+      --card: #020617;
+      --card-soft: #0b1120;
+      --accent1: #38bdf8;
+      --accent2: #a855f7;
+      --accent3: #f97316;
+      --accent4: #22c55e;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border-soft: rgba(148, 163, 184, 0.3);
+      --shadow-soft: 0 22px 45px rgba(15, 23, 42, 0.7);
+      --radius-lg: 22px;
+      --radius-xl: 32px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding: 24px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto 80px;
+    }
+
+    .hero {
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.3), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.25), transparent 50%),
+                  linear-gradient(135deg, #020617, #020617);
+      border-radius: 28px;
+      padding: 28px 24px 26px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 10% 0, rgba(56, 189, 248, 0.25), transparent 55%),
+                        radial-gradient(circle at 100% 60%, rgba(244, 114, 182, 0.18), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    @media (max-width: 860px) {
+      .hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--accent1);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .hero-tag span.emoji {
+      font-size: 14px;
+    }
+
+    .hero-title {
+      font-size: clamp(26px, 3vw, 32px);
+      font-weight: 750;
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--text-soft);
+      max-width: 32rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      background-color: rgba(15, 23, 42, 0.85);
+      color: var(--text-soft);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 7px 15px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, #38bdf8, #a855f7);
+      color: #0b1120;
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.35);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(56, 189, 248, 0.45);
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.92);
+      color: var(--text-soft);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .btn-ghost:hover {
+      transform: translateY(-1px);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .hero-meta {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .hero-graphic {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero-card {
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 60%),
+                  linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.96));
+      padding: 16px 16px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.9);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .hero-grid-card {
+      border-radius: 18px;
+      padding: 10px 10px 9px;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 60%),
+                  rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at bottom right, rgba(88, 28, 135, 0.35), transparent 60%);
+      opacity: 0.32;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .hero-grid-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-grid-emoji {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.75);
+    }
+
+    .hero-grid-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-grid-items {
+      font-size: 11px;
+      color: var(--text-soft);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-ribbon {
+      position: absolute;
+      right: -32px;
+      top: 12px;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      color: #0f172a;
+      font-size: 11px;
+      padding: 4px 40px;
+      transform: rotate(21deg);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.8);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 18px;
+      }
+      .hero {
+        padding: 20px 18px 18px;
+      }
+      .hero-card {
+        margin-top: 6px;
+      }
+    }
+
+    .section {
+      margin-top: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-tagline {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      padding: 14px 13px 12px;
+      background: radial-gradient(circle at top, rgba(30, 64, 175, 0.6), transparent 55%),
+                  radial-gradient(circle at bottom, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+
+    .card-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-soft);
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    .tool-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tool-chip {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      white-space: nowrap;
+    }
+
+    .chip-blue { border-color: rgba(56, 189, 248, 0.75); }
+    .chip-purple { border-color: rgba(168, 85, 247, 0.8); }
+    .chip-orange { border-color: rgba(249, 115, 22, 0.8); }
+    .chip-green { border-color: rgba(34, 197, 94, 0.8); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .dot-blue { background: #38bdf8; }
+    .dot-purple { background: #a855f7; }
+    .dot-orange { background: #f97316; }
+    .dot-green { background: #22c55e; }
+
+    .workflow {
+      margin-top: 30px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      padding: 12px 13px;
+      background: radial-gradient(circle at left, rgba(56, 189, 248, 0.18), transparent 65%),
+                  radial-gradient(circle at right, rgba(234, 179, 8, 0.14), transparent 60%),
+                  rgba(15, 23, 42, 0.98);
+    }
+
+    .workflow-title {
+      font-size: 13px;
+      font-weight: 650;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .workflow-steps {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .step {
+      border-radius: 16px;
+      padding: 8px 9px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .step-label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #38bdf8;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 11px;
+      color: #cbd5f5;
+      text-align: center;
+      padding-bottom: 10px;
+      border-top: 1px solid rgba(148, 163, 184, 0.4);
+      padding-top: 14px;
+    }
+
+    .footer p {
+      margin-bottom: 6px;
+    }
+
+    .footer .footer-small {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .footer .footer-section-title {
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- HERO / 封面區 -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-tag">
+            <span class="emoji">🧑‍🏫</span>
+            <span>給國中老師的 AI 工具資訊圖表懶人包</span>
+          </div>
+          <h1 class="hero-title">
+            用 AI 幫你備課：<br />一張圖看懂「聽說讀寫＋資訊圖表」
+          </h1>
+          <p class="hero-subtitle">
+            這不是要你多做一件事，而是把原本要花 3 小時的備課，
+            壓縮成 30 分鐘：從 YouTube 字幕、歌詞、圖片，到投影片與有聲故事，
+            一套工具地圖直接帶回班上用。
+          </p>
+          <div class="hero-pills">
+            <span class="pill">✔ 國中英文 / 自然 / 社會皆可套用</span>
+            <span class="pill">✔ 按「技能」而不是按「軟體名稱」分類</span>
+            <span class="pill">✔ 可直接分享給同事或學生</span>
+          </div>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#map">
+              查看 AI 工具地圖
+              <span>↓</span>
+            </a>
+            <a class="btn btn-ghost" href="#workflow">
+              教學流程範例（從影片到投影片）
+            </a>
+          </div>
+          <div class="hero-meta">
+            建議用法：開這個頁面＋投影給老師／學生看，一邊講解、一邊示範。
+          </div>
+        </div>
+
+        <div class="hero-graphic">
+          <div class="hero-ribbon">ETC：取 ➜ 轉 ➜ 合</div>
+          <div class="hero-card">
+            <div style="font-size: 11px; color:#9ca3af; margin-bottom:8px;">
+              一張圖看完今天的重點：
+            </div>
+            <div class="hero-grid">
+              <div class="hero-grid-card">
+                <div class="hero-grid-card-header">
+                  <div class="hero-grid-emoji">🎧</div>
+                  <div class="hero-grid-title">聽 Listening</div>
+                </div>
+                <div class="hero-grid-items">
+                  <a href="https://moises.ai" target="_blank" rel="noopener noreferrer">moises.ai</a>、<a href="https://vocalremover.org" target="_blank" rel="noopener noreferrer">vocalremover</a><br />
+                  YouTube CC &amp; SRT 字幕
+                </div>
+              </div>
+
+              <div class="hero-grid-card">
+                <div class="hero-grid-card-header">
+                  <div class="hero-grid-emoji">🗣️</div>
+                  <div class="hero-grid-title">說 Speaking</div>
+                </div>
+                <div class="hero-grid-items">
+                  <a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT</a> / <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini</a> / <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a><br />
+                  LINE bot、AI 歌曲 &amp; Karaoke
+                </div>
+              </div>
+
+              <div class="hero-grid-card">
+                <div class="hero-grid-card-header">
+                  <div class="hero-grid-emoji">📖</div>
+                  <div class="hero-grid-title">讀 Reading</div>
+                </div>
+                <div class="hero-grid-items">
+                  <a href="https://glasp.co" target="_blank" rel="noopener noreferrer">Glasp</a>、<a href="https://www.languagereactor.com" target="_blank" rel="noopener noreferrer">Language Reactor</a>、<a href="https://trancy.org" target="_blank" rel="noopener noreferrer">Trancy</a><br />
+                  影片 / 文檔分析工具
+                </div>
+              </div>
+
+              <div class="hero-grid-card">
+                <div class="hero-grid-card-header">
+                  <div class="hero-grid-emoji">✍️</div>
+                  <div class="hero-grid-title">寫 &amp; 資訊圖表</div>
+                </div>
+                <div class="hero-grid-items">
+                  ChatGPT 生成課文 &amp; 歌詞<br />
+                  AI 投影片、圖片 &amp; 數位故事
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 工具地圖 -->
+    <section id="map" class="section">
+      <div class="section-header">
+        <h2 class="section-title">AI 工具地圖：依「語言技能」整理</h2>
+        <p class="section-tagline">從「功能」而不是「品牌名稱」來思考，方便替換與更新。</p>
+      </div>
+
+      <div class="grid">
+        <!-- 聽 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-left">
+              <div class="card-icon">🎧</div>
+              <div>
+                <div class="card-title">聽 Listening</div>
+                <div style="font-size:11px; color:var(--text-soft);">
+                  用 AI 幫你處理「聲音」：去人聲、分軌、聽懂影片。
+                </div>
+              </div>
+            </div>
+            <span class="card-badge">從歌變成教材</span>
+          </div>
+          <p class="card-desc">
+            適合：聽力訓練、歌曲教學、自然科影片講解、跨科共備。
+          </p>
+          <div class="tool-list">
+            <span class="tool-chip chip-blue"><a href="https://moises.ai" target="_blank" rel="noopener noreferrer">moises.ai（分離人聲 / 伴奏）</a></span>
+            <span class="tool-chip chip-blue"><a href="https://vocalremover.org" target="_blank" rel="noopener noreferrer">vocalremover.org（簡易去人聲）</a></span>
+            <span class="tool-chip chip-blue"><a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">YouTube CC 字幕</a></span>
+            <span class="tool-chip chip-blue">YouTube 雙字幕工具</span>
+            <span class="tool-chip chip-blue">SRT 字幕下載 / 解析工具</span>
+            <span class="tool-chip chip-blue">音檔 Text Analysis（把聲音變文字）</span>
+          </div>
+        </article>
+
+        <!-- 說 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-left">
+              <div class="card-icon">🗣️</div>
+              <div>
+                <div class="card-title">說 Speaking</div>
+                <div style="font-size:11px; color:var(--text-soft);">
+                  讓學生「開口說」：AI 幫忙給句型、對話、歌詞節奏。
+                </div>
+              </div>
+            </div>
+            <span class="card-badge">口說＋表達</span>
+          </div>
+          <p class="card-desc">
+            適合：對話練習、角色扮演、歌曲創作、口說表達作業。
+          </p>
+          <div class="tool-list">
+            <span class="tool-chip chip-purple"><a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT（對話腳本 / 口說提示）</a></span>
+            <span class="tool-chip chip-purple"><a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Google Gemini</a></span>
+            <span class="tool-chip chip-purple"><a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude.ai</a></span>
+            <span class="tool-chip chip-purple"><a href="https://www.moonshot.cn" target="_blank" rel="noopener noreferrer">Moonshot</a></span>
+            <span class="tool-chip chip-purple">Moonshot LINE bot（@251vgtut）</span>
+            <span class="tool-chip chip-purple">AI 小幫手 LINE bot（@007omugu）</span>
+            <span class="tool-chip chip-purple">AI 歌曲 / Karaoke（搭配 SRT 歌詞）</span>
+          </div>
+        </article>
+
+        <!-- 讀 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-left">
+              <div class="card-icon">📖</div>
+              <div>
+                <div class="card-title">讀 Reading</div>
+                <div style="font-size:11px; color:var(--text-soft);">
+                  把影片、文章、網站變成「可閱讀、可標註」的學習材料。
+                </div>
+              </div>
+            </div>
+            <span class="card-badge">閱讀＋字彙</span>
+          </div>
+          <p class="card-desc">
+            適合：精讀、略讀、字彙整理、閱讀理解測驗、雙語教材。
+          </p>
+          <div class="tool-list">
+            <span class="tool-chip chip-orange"><a href="https://glasp.co" target="_blank" rel="noopener noreferrer">Glasp Chrome Extension（影片／網頁重點整理）</a></span>
+            <span class="tool-chip chip-orange"><a href="https://www.languagereactor.com" target="_blank" rel="noopener noreferrer">Language Reactor（雙字幕＋字彙）</a></span>
+            <span class="tool-chip chip-orange"><a href="https://trancy.org" target="_blank" rel="noopener noreferrer">Trancy（影片 / 文章語言學習）</a></span>
+            <span class="tool-chip chip-orange"><a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">YouTube Transcript viewer（直接看逐字稿）</a></span>
+            <span class="tool-chip chip-orange">Text Analysis（長文摘要、關鍵字）</span>
+          </div>
+        </article>
+
+        <!-- 寫 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-left">
+              <div class="card-icon">✍️</div>
+              <div>
+                <div class="card-title">寫 Writing</div>
+                <div style="font-size:11px; color:var(--text-soft);">
+                  讓 AI 當你的「共筆助教」：改寫、潤稿、生成題目與歌詞。
+                </div>
+              </div>
+            </div>
+            <span class="card-badge">寫作＋改寫</span>
+          </div>
+          <p class="card-desc">
+            適合：英文作文、句型變化、自然／社會科筆記整理、作業回饋。
+          </p>
+          <div class="tool-list">
+            <span class="tool-chip chip-green"><a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT（生成課文 / 歌詞 / 題目）</a></span>
+            <span class="tool-chip chip-green"><a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini（多版本改寫 / 構想發散）</a></span>
+            <span class="tool-chip chip-green"><a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude.ai（長文與程式碼比較穩定）</a></span>
+            <span class="tool-chip chip-green"><a href="https://obsidian.md" target="_blank" rel="noopener noreferrer">Obsidian.md（老師自己的教案筆記庫）</a></span>
+            <span class="tool-chip chip-green">SRT 字幕寫作與格式調整（for Karaoke）</span>
+            <span class="tool-chip chip-green">ETC：Extract → Transform → Combine 流程</span>
+          </div>
+        </article>
+
+        <!-- 資訊圖表 / 多媒體 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-left">
+              <div class="card-icon">📊</div>
+              <div>
+                <div class="card-title">資訊圖表 &amp; 多媒體</div>
+                <div style="font-size:11px; color:var(--text-soft);">
+                  把文字變成「看得懂」的圖像、簡報、故事與影片。
+                </div>
+              </div>
+            </div>
+            <span class="card-badge">視覺化教學</span>
+          </div>
+          <p class="card-desc">
+            適合：複雜概念、流程步驟、實驗程序、故事結構講解。
+          </p>
+          <div class="tool-list">
+            <span class="tool-chip chip-blue">ChatGPT 圖片分析（解讀圖表 / 圖片）</span>
+            <span class="tool-chip chip-blue">Gemini 多模態（圖片＋文字一起問）</span>
+            <span class="tool-chip chip-blue">AI 投影片（從字幕／大綱生成簡報）</span>
+            <span class="tool-chip chip-blue">數位故事創作與有聲繪本工具</span>
+            <span class="tool-chip chip-blue">影片剪輯工具（搭配字幕與旁白）</span>
+          </div>
+        </article>
+
+        <!-- 備註區 / 小提示 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-left">
+              <div class="card-icon">💡</div>
+              <div>
+                <div class="card-title">老師使用小提醒</div>
+                <div style="font-size:11px; color:var(--text-soft);">
+                  一次只加 1–2 個工具到課程，不必全都用上。
+                </div>
+              </div>
+            </div>
+            <span class="card-badge">從小地方開始</span>
+          </div>
+          <p class="card-desc">
+            建議做法：
+          </p>
+          <ul style="margin-left:16px; font-size:12px; color:var(--text-soft); margin-top:4px;">
+            <li>先選一節課，把原本要講的內容照常講，只多加「一個 AI 步驟」。</li>
+            <li>例如：用 Glasp 抓影片重點，或用 ChatGPT 產生一首地心引力歌。</li>
+            <li>確認學生會用後，再慢慢加其他工具，變成自己的「教學工作流」。</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-dot dot-blue"></span>
+          <span>聲音 / 圖像相關工具</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-purple"></span>
+          <span>對話 / 口說 / 歌曲</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-orange"></span>
+          <span>閱讀與字彙工具</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-green"></span>
+          <span>寫作與整理工具</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 教學流程示例 -->
+    <section id="workflow" class="workflow">
+      <div class="workflow-title">
+        <span>📌 範例流程：從 YouTube 影片 ➜ 聽說讀寫 ➜ 簡報與資訊圖表</span>
+      </div>
+      <div class="workflow-steps">
+        <div class="step">
+          <div class="step-label">STEP 1｜取 Extract</div>
+          <div>
+            選一支 YouTube 教學影片或歌曲：<br />
+            使用 <strong>字幕下載 / <a href="https://glasp.co" target="_blank" rel="noopener noreferrer">Glasp</a> / <a href="https://www.languagereactor.com" target="_blank" rel="noopener noreferrer">Language Reactor</a></strong> 抓出正文與字幕，
+            匯出成文字或 SRT。
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">STEP 2｜轉 Transform</div>
+          <div>
+            把文字貼到 <strong><a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT</a> / <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini</a> / <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a></strong>：<br />
+            請 AI 幫你做：
+            <ul style="padding-left:16px; margin-top:4px;">
+              <li>👉 字彙表（中英對照）</li>
+              <li>👉 閱讀理解題目</li>
+              <li>👉 改寫成國中程度句子</li>
+            </ul>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">STEP 3｜合 Combine</div>
+          <div>
+            把整理好的內容丟進：<br />
+            <strong>AI 投影片工具、影片剪輯工具、有聲繪本工具</strong>，<br />
+            做出：
+            <ul style="padding-left:16px; margin-top:4px;">
+              <li>📊 一張資訊圖表或心智圖</li>
+              <li>🎤 一首教學歌曲＋Karaoke 字幕</li>
+              <li>📽️ 一支 1–3 分鐘的教學短片</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER / 版權與隱私 -->
+    <footer class="footer">
+      <p>
+        若您有特別希望教學及請葉老師開工作坊的部分，可寫信給葉老師聯絡。
+      </p>
+
+      <p class="footer-small">
+        首次製作：2022年11月 | Last updated: November, 2022<br />
+        最後更新：2025年11月14日 | Last updated: November 14, 2025
+      </p>
+
+      <p class="footer-small">
+        國立雲林科技大學應用外語系葉惠菁特聘教授團隊製作 © 2025<br />
+        Designed by Distinguished Professor Hui-Chin Yeh and Ensemble, Department of Applied Linguistics, National Yunlin University of Science and Technology, Douliu, Taiwan © 2025
+      </p>
+
+      <p class="footer-section-title">
+        隱私政策與責任說明 | Privacy Policy &amp; Responsibility Statement
+      </p>
+
+      <p class="footer-small">
+        中文：我們不會在本工具上蒐集任何資料用於任何用途。<br />
+        如果您想分享您設計的教案 Prompt 供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的 Google 雲端分享連結與詳細說明。<br />
+        本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。
+      </p>
+
+      <p class="footer-small">
+        English: We do not collect any data on this tool for any purpose.<br />
+        If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.<br />
+        The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
