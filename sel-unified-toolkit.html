@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEL社情感學習工具集 | SEL Social-Emotional Learning Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: #FFFDE7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        header {
+            background: #FFFDE7;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 4px solid #F57F17;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 16px;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .tab-navigation {
+            display: flex;
+            background: #FFFDE7;
+            border-bottom: 2px solid #DAA520;
+            padding: 0 40px;
+            gap: 0;
+        }
+
+        .tab-btn {
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            border-bottom: 4px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #FFFDE7;
+            border-bottom-color: #F57F17;
+        }
+
+        .tab-btn.active {
+            background: #FFFDE7;
+            border-bottom-color: #F57F17;
+            color: #000;
+        }
+
+        .content-area {
+            display: none;
+            padding: 40px;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        /* 通用表單樣式 */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .form-label-en {
+            display: block;
+            font-size: 12px;
+            color: #333;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #DAA520;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #000;
+            background: white;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #F57F17;
+            box-shadow: 0 0 0 3px rgba(245, 127, 23, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        input:disabled,
+        textarea:disabled,
+        select:disabled {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        /* 按鈕樣式 */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #000;
+        }
+
+        button.primary {
+            background: #F57F17;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #E65100;
+        }
+
+        button.secondary {
+            background: #FFFDE7;
+            border: 2px solid #F57F17;
+            color: #000;
+        }
+
+        button.secondary:hover {
+            background: #FFFDE7;
+        }
+
+        button.small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        button.danger {
+            background: #EF5350;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #E53935;
+        }
+
+        button.link-btn {
+            background: #1976D2;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button.link-btn:hover {
+            background: #1565C0;
+        }
+
+        /* 複選框樣式 */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #F57F17;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            margin: 0;
+            font-size: 14px;
+            color: #000;
+        }
+
+        /* 預覽區域 */
+        .preview-panel {
+            background: #F5F5F5;
+            border: 2px solid #DAA520;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 24px;
+            min-height: 300px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .preview-content {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #000;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .preview-empty {
+            color: #666;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        /* 複製反饋 */
+        .copy-feedback {
+            display: none;
+            padding: 12px;
+            background: #C8E6C9;
+            color: #000;
+            border: 2px solid #81C784;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .copy-feedback.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        /* 部分標題 */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #F57F17;
+        }
+
+        /* 資訊提示 */
+        .info-banner {
+            background: #FFFDE7;
+            border-left: 4px solid #F57F17;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            color: #000;
+        }
+
+        .info-banner strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .info-banner p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* SEL領域按鈕網格 */
+        .sel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .sel-btn {
+            padding: 12px;
+            background: #F5F5F5;
+            border: 2px solid #DAA520;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .sel-btn:hover {
+            background: #FFFDE7;
+            border-color: #F57F17;
+        }
+
+        .sel-btn.active {
+            background: #F57F17;
+            border-color: #E65100;
+            color: white;
+        }
+
+        .sel-description {
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        /* 預設按鈕 */
+        .preset-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            padding: 8px 16px;
+            background: #F5F5F5;
+            border: 2px solid #DAA520;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #000;
+            transition: all 0.3s;
+        }
+
+        .preset-btn:hover {
+            background: #FFFDE7;
+            border-color: #F57F17;
+        }
+
+        .preset-btn.selected {
+            background: #F57F17;
+            border-color: #E65100;
+            color: white;
+        }
+
+        /* 雙面板 */
+        .dual-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .games-notice {
+            background: #FFF3E0;
+            border: 2px solid #FFB74D;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 24px;
+            color: #000;
+        }
+
+        .games-notice strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .games-notice p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .dual-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 24px;
+            }
+            
+            .tab-navigation {
+                flex-wrap: wrap;
+                padding: 0 20px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+        }
+
+        /* 頁尾 */
+        footer {
+            background: #FFFDE7;
+            border-top: 2px solid #FFF9C4;
+            padding: 20px 40px;
+            font-size: 12px;
+            color: #000;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: #FFFDE7;
+            margin: 12px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 頁首 -->
+        <header>
+            <h1>💛 SEL社情感學習工具集</h1>
+            <p>SEL Social-Emotional Learning Toolkit for Junior High School</p>
+        </header>
+
+        <!-- Tab導航 -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('tool1')">
+                📋 班級客製 | Customizer
+            </button>
+            <button class="tab-btn" onclick="switchTab('tool2')">
+                🤖 AI代理人設計 | Agent Designer
+            </button>
+            <button class="tab-btn" onclick="switchTab('tool3')">
+                ✨ 完整生成器 | Complete Generator
+            </button>
+            <button class="tab-btn" onclick="switchTab('tool4')">
+                🎮 互動遊戲 | Games & Activities
+            </button>
+        </div>
+
+        <!-- Tool 1: 班級客製化Prompt生成器 -->
+        <div id="tool1" class="content-area active">
+            <div class="section-title">📋 國中SEL班級客製Prompt生成器</div>
+            <p style="margin-bottom: 24px; font-size: 14px; color: #000;">根據您的班級特徵，自動生成客製化的SEL教學Prompt</p>
+
+            <div class="dual-panel">
+                <!-- 左側表單 -->
+                <div>
+                    <div class="info-banner">
+                        <strong>💡 使用步驟</strong>
+                        <p>1. 填寫班級基本資訊</p>
+                        <p>2. 選擇SEL領域和班級特徵</p>
+                        <p>3. 點擊「生成Prompt」</p>
+                        <p>4. 複製或下載到AI工具使用</p>
+                    </div>
+
+                    <!-- 班級資訊 -->
+                    <div class="form-group">
+                        <label class="form-label">學校名稱 | School Name</label>
+                        <input type="text" id="schoolName" value="雲林縣○○國中" disabled style="background: #F5F5F5;">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">年級 | Grade</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="radio" id="grade1" name="grade" value="七年級">
+                                <label for="grade1">七年級 | 7th Grade</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="radio" id="grade2" name="grade" value="八年級">
+                                <label for="grade2">八年級 | 8th Grade</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="radio" id="grade3" name="grade" value="九年級">
+                                <label for="grade3">九年級 | 9th Grade</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">班級名稱 | Class Name</label>
+                        <input type="text" id="className" placeholder="例：704班、英文班" value="">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">班級人數 | Number of Students</label>
+                        <input type="number" id="classSize" placeholder="例：30" value="">
+                    </div>
+
+                    <!-- SEL領域焦點 -->
+                    <div class="form-group">
+                        <label class="form-label">SEL領域焦點 | SEL Domain Focus</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sel1" value="自我認識">
+                                <label for="sel1">自我認識</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sel2" value="自我管理">
+                                <label for="sel2">自我管理</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sel3" value="社會認識">
+                                <label for="sel3">社會認識</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sel4" value="關係管理">
+                                <label for="sel4">關係管理</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sel5" value="負責任決定">
+                                <label for="sel5">負責任決定</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 班級特徵 -->
+                    <div class="form-group">
+                        <label class="form-label">班級特徵 | Class Characteristics</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="char1" value="人際關係良好">
+                                <label for="char1">人際關係良好</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="char2" value="需要情緒管理">
+                                <label for="char2">需要情緒管理</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="char3" value="學習自信不足">
+                                <label for="char3">學習自信不足</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="char4" value="喜歡團隊活動">
+                                <label for="char4">喜歡團隊活動</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="char5" value="有特殊需求學生">
+                                <label for="char5">有特殊需求學生</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="char6" value="多元文化背景">
+                                <label for="char6">多元文化背景</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 教學活動類型 -->
+                    <div class="form-group">
+                        <label class="form-label">教學活動類型 | Activity Type</label>
+                        <select id="activityType">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="團隊建立">團隊建立 | Team Building</option>
+                            <option value="情緒識別">情緒識別 | Emotion Recognition</option>
+                            <option value="衝突解決">衝突解決 | Conflict Resolution</option>
+                            <option value="同理心培養">同理心培養 | Empathy Building</option>
+                            <option value="決策練習">決策練習 | Decision Making</option>
+                            <option value="自信心建立">自信心建立 | Confidence Building</option>
+                            <option value="溝通技巧">溝通技巧 | Communication Skills</option>
+                            <option value="領導力培養">領導力培養 | Leadership Development</option>
+                        </select>
+                    </div>
+
+                    <!-- 補充說明 -->
+                    <div class="form-group">
+                        <label class="form-label">特殊需求或背景資訊 | Special Notes</label>
+                        <textarea id="specialNeeds" placeholder="例：班級曾經歷衝突、有新生加入、特殊文化背景等"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="primary" onclick="generateTool1Prompt()">📝 生成 | Generate</button>
+                        <button class="secondary" onclick="copyTool1Prompt()">📋 複製 | Copy</button>
+                        <button class="secondary" onclick="downloadTool1Prompt()">⬇️ 下載 | Download</button>
+                    </div>
+                </div>
+
+                <!-- 右側預覽 -->
+                <div>
+                    <div class="section-title">✨ 生成的Prompt預覽</div>
+                    <div id="copyFeedback" class="copy-feedback">✅ 已複製到剪貼板 | Copied to clipboard!</div>
+                    <div class="preview-panel">
+                        <div class="preview-empty" id="preview1">點擊「生成」開始 | Click Generate to start...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tool 2: SEL AI教學代理人設計器 -->
+        <div id="tool2" class="content-area">
+            <div class="section-title">🤖 SEL AI教學代理人設計器</div>
+            <p style="margin-bottom: 24px; font-size: 14px; color: #000;">設計個性化的SEL AI教學代理人指令</p>
+
+            <div class="info-banner">
+                <strong>💡 使用步驟</strong>
+                <p><strong>第1步：</strong>選擇要強調的SEL領域</p>
+                <p><strong>第2步：</strong>填寫基本資訊與教學設定</p>
+                <p><strong>第3步：</strong>點擊「生成Prompt」預覽AI教學代理人的指令</p>
+                <p><strong>第4步：</strong>複製或下載Prompt到您選擇的AI工具（如Claude、ChatGPT等）</p>
+            </div>
+
+            <!-- SEL領域選擇 -->
+            <div class="form-group">
+                <label class="form-label">選擇SEL領域 | Select SEL Domain</label>
+                <div class="sel-grid" id="selGrid">
+                    <!-- 由JavaScript動態生成 -->
+                </div>
+            </div>
+
+            <div class="dual-panel">
+                <!-- 左側設定 -->
+                <div>
+                    <!-- 選定的SEL -->
+                    <div class="form-group">
+                        <label class="form-label">選定的SEL領域 | Selected SEL Domain</label>
+                        <input type="text" id="selectedSEL" readonly style="background: #F5F5F5;">
+                    </div>
+
+                    <!-- 學習目標 -->
+                    <div class="form-group">
+                        <label class="form-label">學習目標 | Learning Objective</label>
+                        <textarea id="objective" placeholder="例：幫助學生認識自我情緒，發展情緒管理能力"></textarea>
+                    </div>
+
+                    <!-- 班級層級 -->
+                    <div class="form-group">
+                        <label class="form-label">班級層級 | Grade Level</label>
+                        <select id="gradeLevel">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="國中七年級">國中七年級 | 7th Grade</option>
+                            <option value="國中八年級">國中八年級 | 8th Grade</option>
+                            <option value="國中九年級">國中九年級 | 9th Grade</option>
+                        </select>
+                    </div>
+
+                    <!-- 教學時長 -->
+                    <div class="form-group">
+                        <label class="form-label">教學時長 | Duration</label>
+                        <select id="duration">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="單堂課（45分鐘）">單堂課（45分鐘）</option>
+                            <option value="跨堂（2-3堂課）">跨堂（2-3堂課）</option>
+                            <option value="單元課程（4堂課以上）">單元課程（4堂課以上）</option>
+                        </select>
+                    </div>
+
+                    <!-- 教學工具 -->
+                    <div class="form-group">
+                        <label class="form-label">教學工具和資源 | Teaching Tools</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool2_1" value="影片">
+                                <label for="tool2_1">影片 (Videos)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool2_2" value="情境案例">
+                                <label for="tool2_2">情境案例 (Scenarios)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool2_3" value="角色扮演">
+                                <label for="tool2_3">角色扮演 (Role-play)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool2_4" value="小組討論">
+                                <label for="tool2_4">小組討論 (Group Discussion)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool2_5" value="省思活動">
+                                <label for="tool2_5">省思活動 (Reflection)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool2_6" value="服務學習">
+                                <label for="tool2_6">服務學習 (Service Learning)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 學習流程 -->
+                    <div class="form-group">
+                        <label class="form-label">學習流程 | Learning Process</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="flow1" value="提高認識">
+                                <label for="flow1">提高認識</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="flow2" value="深入探討">
+                                <label for="flow2">深入探討</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="flow3" value="實踐行動">
+                                <label for="flow3">實踐行動</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="flow4" value="反思評估">
+                                <label for="flow4">反思評估</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="primary" onclick="generateTool2Prompt()">📝 生成 | Generate</button>
+                        <button class="secondary" onclick="copyTool2Prompt()">📋 複製 | Copy</button>
+                        <button class="secondary" onclick="downloadTool2Prompt()">⬇️ 下載 | Download</button>
+                    </div>
+                </div>
+
+                <!-- 右側預覽 -->
+                <div>
+                    <div class="section-title">✨ Prompt預覽</div>
+                    <div id="copyFeedback2" class="copy-feedback">✅ 已複製到剪貼板 | Copied to clipboard!</div>
+                    <div class="preview-panel">
+                        <div class="preview-empty" id="preview2">點擊「生成」開始 | Click Generate to start...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tool 3: 完整SEL Prompt生成器 -->
+        <div id="tool3" class="content-area">
+            <div class="section-title">✨ SEL完整Prompt生成器</div>
+            <p style="margin-bottom: 24px; font-size: 14px; color: #000;">綜合式的SEL教學Prompt生成，支援多個SEL領域同時規劃</p>
+
+            <div class="info-banner">
+                <strong>💡 此工具特色</strong>
+                <p>• 支援同時選擇多個SEL領域</p>
+                <p>• 更細緻的教學參數設定</p>
+                <p>• 適合統整式的全班SEL課程規劃</p>
+            </div>
+
+            <div class="dual-panel">
+                <!-- 左側 -->
+                <div>
+                    <!-- 基本資訊 -->
+                    <div class="section-title" style="margin-top: 0;">基本資訊 | Basic Information</div>
+
+                    <div class="form-group">
+                        <label class="form-label">課程名稱 | Course Title</label>
+                        <input type="text" id="courseTitle" placeholder="例：情緒與關係管理課程">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">班級資訊 | Class Info</label>
+                        <input type="text" id="classInfo" placeholder="例：國中九年級，30人">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">課程時間 | Course Duration</label>
+                        <select id="courseDuration">
+                            <option value="">-- 請選擇 --</option>
+                            <option value="1堂課">1堂課（45分鐘）</option>
+                            <option value="2-3堂課">2-3堂課（90-135分鐘）</option>
+                            <option value="1單元">1單元（4-6堂課）</option>
+                            <option value="整學期">整學期課程</option>
+                        </select>
+                    </div>
+
+                    <!-- SEL領域 -->
+                    <div class="section-title">選擇SEL領域 | Select SEL Domains</div>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 12px;">可複選多個領域</p>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sel3_1" value="自我認識" onchange="toggleSEL3('自我認識')">
+                            <label for="sel3_1">自我認識 | Self-Awareness</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sel3_2" value="自我管理" onchange="toggleSEL3('自我管理')">
+                            <label for="sel3_2">自我管理 | Self-Management</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sel3_3" value="社會認識" onchange="toggleSEL3('社會認識')">
+                            <label for="sel3_3">社會認識 | Social Awareness</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sel3_4" value="關係管理" onchange="toggleSEL3('關係管理')">
+                            <label for="sel3_4">關係管理 | Relationship Skills</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sel3_5" value="負責任決定" onchange="toggleSEL3('負責任決定')">
+                            <label for="sel3_5">負責任決定 | Responsible Decision-Making</label>
+                        </div>
+                    </div>
+
+                    <!-- 教學方法 -->
+                    <div class="section-title">教學方法 | Teaching Methods</div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="method1" value="講授式教學">
+                            <label for="method1">講授式教學</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="method2" value="討論式教學">
+                            <label for="method2">討論式教學</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="method3" value="體驗式學習">
+                            <label for="method3">體驗式學習</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="method4" value="合作學習">
+                            <label for="method4">合作學習</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="method5" value="省思活動">
+                            <label for="method5">省思活動</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="method6" value="遊戲化學習">
+                            <label for="method6">遊戲化學習</label>
+                        </div>
+                    </div>
+
+                    <!-- 評估方式 -->
+                    <div class="form-group" style="margin-top: 24px;">
+                        <label class="form-label">評估方式 | Assessment Methods</label>
+                        <textarea id="assessment" placeholder="例：課堂觀察、省思單、同儕評估、自我評估等"></textarea>
+                    </div>
+
+                    <!-- 補充說明 -->
+                    <div class="form-group">
+                        <label class="form-label">補充說明 | Additional Notes</label>
+                        <textarea id="additionalNotes" placeholder="例：班級文化、特殊需求、資源限制等"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="primary" onclick="generateTool3Prompt()">📝 生成 | Generate</button>
+                        <button class="secondary" onclick="copyTool3Prompt()">📋 複製 | Copy</button>
+                        <button class="secondary" onclick="downloadTool3Prompt()">⬇️ 下載 | Download</button>
+                    </div>
+                </div>
+
+                <!-- 右側預覽 -->
+                <div>
+                    <div class="section-title" style="margin-top: 0;">✨ Prompt預覽</div>
+                    <div id="copyFeedback3" class="copy-feedback">✅ 已複製到剪貼板 | Copied to clipboard!</div>
+                    <div class="preview-panel">
+                        <div class="preview-empty" id="preview3">點擊「生成」開始 | Click Generate to start...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tool 4: 互動遊戲與活動 -->
+        <div id="tool4" class="content-area">
+            <div class="section-title">🎮 SEL互動遊戲與活動</div>
+            <p style="margin-bottom: 24px; font-size: 14px; color: #000;">SEL教學相關的遊戲化學習資源與範例</p>
+
+            <div class="games-notice">
+                <strong>💡 關於SEL遊戲</strong>
+                <p>• 下方連結是一些SEL遊戲的<strong>範例</strong>，展示如何將社情感學習融入互動活動</p>
+                <p>• 您也可以<strong>使用AI（如Claude、ChatGPT）自動產生</strong>符合您班級需求的客製化遊戲</p>
+                <p>• 提示：告訴AI「我需要一個SEL互動遊戲，主題是[情緒管理/團隊合作等]，適合[年級]，時間[多久]」，AI會為您快速產生多個選項！</p>
+            </div>
+
+            <div class="button-group">
+                <a href="sel-games-examples.html" class="primary" style="text-decoration: none; display: inline-block;">
+                    🎮 查看遊戲範例 | View Game Examples
+                </a>
+            </div>
+
+            <div class="section-title" style="margin-top: 40px;">🤖 使用AI快速產生遊戲</div>
+            <p style="margin-bottom: 24px; font-size: 14px; color: #000;">以下是一個簡單的Prompt模版，您可以複製並貼到Claude、ChatGPT等AI工具中：</p>
+
+            <div class="preview-panel">
+                <div class="preview-content" id="aiPromptTemplate">請為國中生（7-9年級）設計一個SEL互動遊戲，要求如下：
+
+【遊戲主題】：情緒識別與表達
+
+【時間長度】：單堂課（45分鐘以內）
+
+【班級規模】：30人左右
+
+【學習目標】：
+• 幫助學生認識和命名自己的情緒
+• 培養同理心，理解他人的情緒狀態
+• 練習健康的情緒表達方式
+
+【活動形式】：
+可以是角色扮演、小組遊戲、配對活動、討論式遊戲等
+
+【輸出要求】：
+1. 遊戲名稱
+2. 所需物品
+3. 遊戲規則（分步驟說明）
+4. 引導問題（教師可用的反思提問）
+5. 可能的變化版本（針對不同程度或時間調整）
+
+請提供詳細且實際可行的教學步驟。</div>
+            </div>
+
+            <div class="button-group">
+                <button class="secondary" onclick="copyAIPrompt()">📋 複製此Prompt模版 | Copy Template</button>
+            </div>
+
+            <div id="copyFeedback4" class="copy-feedback">✅ 已複製到剪貼板 | Copied to clipboard!</div>
+        </div>
+
+        <!-- 頁尾 -->
+        <footer>
+            <strong>ℹ️ 隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+            <div class="footer-divider"></div>
+            <p><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+            <p>如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+            <p>本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+            <div class="footer-divider"></div>
+            <p><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+            <p>If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.</p>
+            <p>The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.</p>
+            <div class="footer-divider"></div>
+            <p>📧 Google雲端連結 | Google Drive Link: 由各場次研習提供，或寄信到團隊信箱由葉教授及團隊共同管理 | Provided by each workshop session, or email our team inbox</p>
+            <div class="footer-divider"></div>
+            <p>製作單位 | Created by: 國立雲林科技大學應用外語系葉惠菁特聘教授團隊</p>
+            <p>首次製作 | First Created: 2025年11月 | November 2025</p>
+            <p>與Claude.ai共構 | Co-Developed with Claude.ai</p>
+            <p>最後更新 | Last Updated: 2025年11月18日 | November 18, 2025</p>
+        </footer>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // SEL領域資料
+        const SELDomains = [
+            { name: '自我認識', en: 'Self-Awareness', desc: '了解自己的情緒與優勢' },
+            { name: '自我管理', en: 'Self-Management', desc: '管理情緒與時間' },
+            { name: '社會認識', en: 'Social Awareness', desc: '理解他人與社會' },
+            { name: '關係管理', en: 'Relationship Skills', desc: '建立健康人際關係' },
+            { name: '負責任決定', en: 'Responsible Decision-Making', desc: '做出明智的選擇' }
+        ];
+
+        let currentPrompt1 = '';
+        let currentPrompt2 = '';
+        let currentPrompt3 = '';
+        let selectedSEL = null;
+        let selectedSELs = [];
+
+        // 初始化
+        function init() {
+            generateSELGrid();
+        }
+
+        // 生成SEL網格（Tool 2）
+        function generateSELGrid() {
+            const grid = document.getElementById('selGrid');
+            grid.innerHTML = SELDomains.map((sel, idx) => `
+                <button class="sel-btn" onclick="selectSEL('${sel.name}')">
+                    <div><strong>${sel.name}</strong></div>
+                    <div class="sel-description">${sel.en}</div>
+                </button>
+            `).join('');
+        }
+
+        // Tab切換
+        function switchTab(tabId) {
+            document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Tool 2: 選擇SEL
+        function selectSEL(name) {
+            selectedSEL = name;
+            document.querySelectorAll('#selGrid .sel-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.sel-btn').classList.add('active');
+            document.getElementById('selectedSEL').value = name;
+        }
+
+        // Tool 3: 切換SEL
+        function toggleSEL3(name) {
+            if (selectedSELs.includes(name)) {
+                selectedSELs = selectedSELs.filter(s => s !== name);
+            } else {
+                selectedSELs.push(name);
+            }
+        }
+
+        // Tool 1: 生成Prompt
+        function generateTool1Prompt() {
+            const className = document.getElementById('className').value || '未指定';
+            const classSize = document.getElementById('classSize').value || '未指定';
+            const gradeSelected = document.querySelector('input[name="grade"]:checked');
+            const grade = gradeSelected ? gradeSelected.value : '未選擇';
+            
+            const selDomains = [];
+            ['sel1', 'sel2', 'sel3', 'sel4', 'sel5'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.checked) selDomains.push(el.value);
+            });
+            
+            const characteristics = [];
+            ['char1', 'char2', 'char3', 'char4', 'char5', 'char6'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.checked) characteristics.push(el.value);
+            });
+            
+            const activityType = document.getElementById('activityType').value || '未指定';
+            const special = document.getElementById('specialNeeds').value || '無';
+
+            const prompt = `# 國中SEL班級客製化教學Prompt
+
+## 班級資訊
+- 班級年級：${grade}
+- 班級名稱：${className}
+- 班級人數：${classSize}人
+- 學校：雲林縣○○國中
+
+## SEL領域焦點
+${selDomains.length > 0 ? selDomains.map(s => `• ${s}`).join('\n') : '• 均衡發展五大SEL領域'}
+
+## 班級特徵
+${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\n') : '• 多元化班級'}
+
+## 教學活動類型
+${activityType}
+
+## 班級背景與特殊需求
+${special}
+
+## 教學建議
+根據以上班級特徵，建議採用多元化的SEL教學方式，特別強調${selDomains.length > 0 ? selDomains.join('、') : '五大SEL領域的均衡發展'}，讓${grade}的每位學生都能在安全、包容的班級環境中發展社情感能力。`;
+
+            currentPrompt1 = prompt;
+            document.getElementById('preview1').textContent = prompt;
+        }
+
+        // Tool 2: 生成Prompt
+        function generateTool2Prompt() {
+            if (!selectedSEL) {
+                alert('請先選擇SEL領域 | Please select an SEL domain first');
+                return;
+            }
+
+            const objective = document.getElementById('objective').value || '未指定';
+            const gradeLevel = document.getElementById('gradeLevel').value || '未指定';
+            const duration = document.getElementById('duration').value || '未指定';
+            
+            const tools = [];
+            ['tool2_1', 'tool2_2', 'tool2_3', 'tool2_4', 'tool2_5', 'tool2_6'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.checked) tools.push(el.value);
+            });
+            
+            const flows = [];
+            ['flow1', 'flow2', 'flow3', 'flow4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.checked) flows.push(el.value);
+            });
+
+            const prompt = `# SEL AI教學代理人設計指令
+
+## 目標
+聚焦於 ${selectedSEL}
+
+## 學習目標
+${objective}
+
+## 班級資訊
+- 班級層級：${gradeLevel}
+- 教學時長：${duration}
+
+## 教學工具和資源
+${tools.length > 0 ? tools.map(t => `• ${t}`).join('\n') : '• 混合多種資源'}
+
+## 學習流程
+${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 提高認識 → 深入探討 → 實踐行動 → 反思評估'}
+
+## 代理人角色設定
+您是一位有經驗的SEL教育推廣者，專門協助國中學生發展社情感能力。請根據上述參數，特別強調「${selectedSEL}」，為學生設計互動、有意義且安全的學習體驗。`;
+
+            currentPrompt2 = prompt;
+            document.getElementById('preview2').textContent = prompt;
+        }
+
+        // Tool 3: 生成Prompt
+        function generateTool3Prompt() {
+            const courseTitle = document.getElementById('courseTitle').value || 'SEL課程';
+            const classInfo = document.getElementById('classInfo').value || '未指定';
+            const duration = document.getElementById('courseDuration').value || '未指定';
+            
+            const methods = [];
+            ['method1', 'method2', 'method3', 'method4', 'method5', 'method6'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el.checked) methods.push(el.value);
+            });
+            
+            const assessment = document.getElementById('assessment').value || '形成性評估';
+            const notes = document.getElementById('additionalNotes').value || '無';
+
+            const selList = selectedSELs.length > 0 
+                ? selectedSELs.join('、')
+                : '五大SEL領域';
+
+            const prompt = `# SEL完整課程設計Prompt
+
+## 課程基本資訊
+- 課程名稱：${courseTitle}
+- 班級資訊：${classInfo}
+- 課程時間：${duration}
+
+## 涵蓋的SEL領域
+${selectedSELs.length > 0 ? selectedSELs.map(s => `• ${s}`).join('\n') : '• 自我認識、自我管理、社會認識、關係管理、負責任決定'}
+
+## 教學方法
+${methods.length > 0 ? methods.map(m => `• ${m}`).join('\n') : '• 多元教學策略'}
+
+## 評估方式
+${assessment}
+
+## 補充說明
+${notes}
+
+## 課程設計原則
+1. 以學生為中心，營造安全、包容的學習環境
+2. 整合多個SEL領域，發展全面的社情感能力
+3. 連結學生生活經驗和班級互動
+4. 鼓勵反思與自我認識
+5. 培養健康的人際關係與負責任的決定能力
+
+請根據以上資訊設計一份完整的課程大綱和教學活動。`;
+
+            currentPrompt3 = prompt;
+            document.getElementById('preview3').textContent = prompt;
+        }
+
+        // 複製Prompt
+        function copyTool1Prompt() {
+            if (!currentPrompt1) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
+            navigator.clipboard.writeText(currentPrompt1).then(() => {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => feedback.classList.remove('show'), 2000);
+            });
+        }
+
+        function copyTool2Prompt() {
+            if (!currentPrompt2) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
+            navigator.clipboard.writeText(currentPrompt2).then(() => {
+                const feedback = document.getElementById('copyFeedback2');
+                feedback.classList.add('show');
+                setTimeout(() => feedback.classList.remove('show'), 2000);
+            });
+        }
+
+        function copyTool3Prompt() {
+            if (!currentPrompt3) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
+            navigator.clipboard.writeText(currentPrompt3).then(() => {
+                const feedback = document.getElementById('copyFeedback3');
+                feedback.classList.add('show');
+                setTimeout(() => feedback.classList.remove('show'), 2000);
+            });
+        }
+
+        function copyAIPrompt() {
+            const template = document.getElementById('aiPromptTemplate').textContent;
+            navigator.clipboard.writeText(template).then(() => {
+                const feedback = document.getElementById('copyFeedback4');
+                feedback.classList.add('show');
+                setTimeout(() => feedback.classList.remove('show'), 2000);
+            });
+        }
+
+        // 下載Prompt
+        function downloadTool1Prompt() {
+            if (!currentPrompt1) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
+            downloadFile(currentPrompt1, 'SEL_Prompt.txt');
+        }
+
+        function downloadTool2Prompt() {
+            if (!currentPrompt2) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
+            downloadFile(currentPrompt2, 'SEL_Agent_Prompt.txt');
+        }
+
+        function downloadTool3Prompt() {
+            if (!currentPrompt3) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
+            downloadFile(currentPrompt3, 'SEL_Complete_Prompt.txt');
+        }
+
+        function downloadFile(content, filename) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            d

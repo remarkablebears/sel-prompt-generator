@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEL遊戲範例 | SEL Game Examples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Traditional Chinese', sans-serif;
+            background: #FFFDE7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        header {
+            background: #FFFDE7;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 4px solid #F57F17;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 16px;
+            color: #000;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #F57F17;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #E65100;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .info-banner {
+            background: #FFFDE7;
+            border-left: 4px solid #F57F17;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 40px;
+            color: #000;
+        }
+
+        .info-banner strong {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .info-banner p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #DAA520;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border-color: #F57F17;
+        }
+
+        .game-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .game-card h2 {
+            font-size: 1.5em;
+            color: #000;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .sel-tag {
+            display: inline-block;
+            background: #FFFDE7;
+            color: #F57F17;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            width: fit-content;
+            border: 1px solid #FFF9C4;
+        }
+
+        .game-card p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .game-info {
+            font-size: 0.85em;
+            color: #999;
+            display: flex;
+            gap: 15px;
+        }
+
+        .game-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border-top: 4px solid #F57F17;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #F57F17;
+            color: white;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #E65100;
+        }
+
+        .title-section {
+            margin-bottom: 25px;
+        }
+
+        .title-section h2 {
+            font-size: 1.8em;
+            color: #000;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .title-section .sel-tag {
+            display: inline-block;
+        }
+
+        .instructions {
+            background: #F5F5F5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #000;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #DAA520;
+            padding-bottom: 8px;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #F57F17 0%, #E65100 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 2em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            color: white;
+            font-weight: 700;
+        }
+
+        .memory-card:hover:not(.matched):not(.flipped) {
+            transform: scale(1.05);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #333;
+        }
+
+        .memory-card.matched {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .memory-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .reaction-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .reaction-box {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #ccc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            transition: all 0.1s;
+        }
+
+        .reaction-box.active {
+            background: linear-gradient(135deg, #F57F17 0%, #E65100 100%);
+            color: white;
+            box-shadow: 0 8px 24px rgba(245, 127, 23, 0.4);
+        }
+
+        .reaction-box.ready {
+            background: #FFE082;
+            color: #333;
+        }
+
+        .word-game {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .word-item {
+            background: white;
+            border: 2px solid #DAA520;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            user-select: none;
+            color: #000;
+        }
+
+        .word-item:hover {
+            background: #FFF9C4;
+            border-color: #F57F17;
+        }
+
+        .word-item.selected {
+            background: linear-gradient(135deg, #F57F17 0%, #E65100 100%);
+            color: white;
+            border-color: #F57F17;
+        }
+
+        .word-item.correct {
+            background: #C8E6C9;
+            border-color: #4CAF50;
+            color: #2E7D32;
+        }
+
+        .word-item.wrong {
+            background: #FFCDD2;
+            border-color: #F44336;
+            color: #C62828;
+        }
+
+        .btn {
+            background: #F57F17;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background: #E65100;
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            background: #F5F5F5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.1em;
+            display: none;
+            color: #000;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box.success {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .result-box.fail {
+            background: #FFCDD2;
+            color: #C62828;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        footer {
+            background: #FFFDE7;
+            border-top: 2px solid #FFF9C4;
+            padding: 20px 40px;
+            font-size: 12px;
+            color: #000;
+            text-align: center;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 頁首 -->
+        <header>
+            <h1>🎮 SEL遊戲範例</h1>
+            <p>SEL Game Examples - 課堂互動遊戲示範</p>
+            <a href="sel-unified-toolkit.html" class="back-link">← 返回主工具 | Back to Main Toolkit</a>
+        </header>
+
+        <!-- 內容 -->
+        <div class="content">
+            <div class="info-banner">
+                <strong>💡 關於這些遊戲</strong>
+                <p>• 這些是SEL教學遊戲的<strong>範例</strong>，展示如何將社情感學習融入互動活動</p>
+                <p>• 您可以點擊下方的卡片查看遊戲詳細說明，甚至可以在課堂中互動操作</p>
+                <p>• 記住：您也可以<strong>使用AI快速客製化遊戲</strong>，讓每個班級都有獨特的SEL學習體驗！</p>
+            </div>
+
+            <!-- 遊戲卡片網格 -->
+            <div class="games-grid">
+                <!-- 遊戲1: 記憶配對 -->
+                <div class="game-card" onclick="openGame('memory')">
+                    <div class="game-icon">🧠</div>
+                    <h2>情緒記憶配對</h2>
+                    <span class="sel-tag">自我覺察</span>
+                    <p>配對相同的情緒表情和描述。考驗記憶力，同時認識不同的情緒表現。</p>
+                    <div class="game-info">
+                        <span>⏱️ 3-5分鐘</span>
+                        <span>👥 個人/小組</span>
+                    </div>
+                </div>
+
+                <!-- 遊戲2: 快速反應 -->
+                <div class="game-card" onclick="openGame('reaction')">
+                    <div class="game-icon">⚡</div>
+                    <h2>快速反應挑戰</h2>
+                    <span class="sel-tag">自我管理</span>
+                    <p>按照顏色變化快速按下按鈕。鍛鍊專注力和反應速度。</p>
+                    <div class="game-info">
+                        <span>⏱️ 2-3分鐘</span>
+                        <span>👥 全班</span>
+                    </div>
+                </div>
+
+                <!-- 遊戲3: 同理心配對 -->
+                <div class="game-card" onclick="openGame('empathy')">
+                    <div class="game-icon">❤️</div>
+                    <h2>同理心配對</h2>
+                    <span class="sel-tag">社會覺察</span>
+                    <p>配對情境和適當的同理回應。學習如何理解他人的感受並給予支持。</p>
+                    <div class="game-info">
+                        <span>⏱️ 5-8分鐘</span>
+                        <span>👥 小組討論</span>
+                    </div>
+                </div>
+
+                <!-- 遊戲4: 決策棋盤 -->
+                <div class="game-card" onclick="openGame('decision')">
+                    <div class="game-icon">🎲</div>
+                    <h2>決策棋盤</h2>
+                    <span class="sel-tag">負責任決定</span>
+                    <p>投擲骰子移動，遭遇決策挑戰。學習在日常情境中做出負責任的決定。</p>
+                    <div class="game-info">
+                        <span>⏱️ 10-15分鐘</span>
+                        <span>👥 2-4人小組</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 遊戲Modal -->
+        <!-- Memory Game Modal -->
+        <div id="memory-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeGame('memory')">&times;</button>
+                <div class="title-section">
+                    <h2>🧠 情緒記憶配對</h2>
+                    <span class="sel-tag">自我覺察 | Self-Awareness</span>
+                </div>
+                <div class="instructions">
+                    <strong>遊戲說明：</strong>配對相同的情緒表情卡片。翻開兩張牌，如果內容相同就會保留；不同則翻回。看你能多快找到所有配對！
+                </div>
+                <div class="memory-stats">
+                    <div>配對數：<span id="matched">0</span>/8</div>
+                    <div>嘗試次數：<span id="attempts">0</span></div>
+                </div>
+                <div class="memory-grid" id="memoryGrid"></div>
+                <button class="btn" onclick="initMemoryGame()">重新開始 | Restart</button>
+                <button class="btn" onclick="closeGame('memory')">關閉 | Close</button>
+            </div>
+        </div>
+
+        <!-- Reaction Game Modal -->
+        <div id="reaction-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeGame('reaction')">&times;</button>
+                <div class="title-section">
+                    <h2>⚡ 快速反應挑戰</h2>
+                    <span class="sel-tag">自我管理 | Self-Management</span>
+                </div>
+                <div class="instructions">
+                    <strong>遊戲說明：</strong>等待方框變色。當方框變成<strong>橘色</strong>時，盡快點擊它！看你能得到多快的反應時間。
+                </div>
+                <div class="reaction-container">
+                    <div class="reaction-box ready" id="reactionBox">準備中...</div>
+                    <p id="reactionTime" style="font-size: 1.3em; font-weight: 700; color: #000;"></p>
+                    <button class="btn" onclick="startReactionGame()">開始遊戲 | Start Game</button>
+                    <button class="btn" onclick="closeGame('reaction')">關閉 | Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empathy Game Modal -->
+        <div id="empathy-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeGame('empathy')">&times;</button>
+                <div class="title-section">
+                    <h2>❤️ 同理心配對</h2>
+                    <span class="sel-tag">社會覺察 | Social Awareness</span>
+                </div>
+                <div class="instructions">
+                    <strong>遊戲說明：</strong>閱讀左邊的情境，選擇右邊最恰當的同理回應。練習理解他人感受和提供支持的方式。
+                </div>
+                <div id="empathyContent"></div>
+                <button class="btn" onclick="initEmpathyGame()">重新開始 | Restart</button>
+                <button class="btn" onclick="closeGame('empathy')">關閉 | Close</button>
+            </div>
+        </div>
+
+        <!-- Decision Game Modal -->
+        <div id="decision-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeGame('decision')">&times;</button>
+                <div class="title-section">
+                    <h2>🎲 決策棋盤</h2>
+                    <span class="sel-tag">負責任決定 | Responsible Decision-Making</span>
+                </div>
+                <div class="instructions">
+                    <strong>遊戲說明：</strong>點擊投骰子，按照點數移動。遭遇決策情境時，選擇最負責任的解決方案。看你能闖到終點嗎？
+                </div>
+                <div id="decisionContent"></div>
+                <button class="btn" onclick="initDecisionGame()">重新開始 | Restart</button>
+                <button class="btn" onclick="closeGame('decision')">關閉 | Close</button>
+            </div>
+        </div>
+
+        <!-- 頁尾 -->
+        <footer>
+            <strong>ℹ️ 隱私政策與責任說明 | Privacy Policy & Responsibility Statement</strong>
+            <div class="footer-divider"></div>
+            <p><strong>中文：</strong>我們不會在本工具上蒐集任何資料用於任何用途。</p>
+            <p>如果您想分享您設計的教案Prompt供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的Google雲端分享連結與詳細說明。</p>
+            <p>本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。</p>
+            <div class="footer-divider"></div>
+            <p><strong>English:</strong> We do not collect any data on this tool for any purpose.</p>
+            <p>If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.</p>
+            <p>The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.</p>
+            <div class="footer-divider"></div>
+            <p>📧 Google雲端連結 | Google Drive Link: 由各場次研習提供，或寄信到團隊信箱由葉教授及團隊共同管理 | Provided by each workshop session, or email our team inbox</p>
+            <div class="footer-divider"></div>
+            <p>製作單位 | Created by: 國立雲林科技大學應用外語系葉惠菁特聘教授團隊</p>
+            <p>首次製作 | First Created: 2025年11月 | November 2025</p>
+            <p>與Claude.ai共構 | Co-Developed with Claude.ai</p>
+            <p>最後更新 | Last Updated: 2025年11月18日 | November 18, 2025</p>
+        </footer>
+    <script>
+        // 記憶遊戲資料
+        const emotionPairs = [
+            { emoji: '😊', text: '開心' },
+            { emoji: '😢', text: '難過' },
+            { emoji: '😠', text: '生氣' },
+            { emoji: '😨', text: '害怕' },
+            { emoji: '😴', text: '疲倦' },
+            { emoji: '😕', text: '困惑' },
+            { emoji: '😌', text: '放鬆' },
+            { emoji: '🤗', text: '感謝' }
+        ];
+
+        const empathyPairs = [
+            {
+                scenario: '我的朋友今天功課沒做好，被老師罵了，感到很沮喪。',
+                correct: '我理解你的沮喪。需要幫忙嗎？我們一起想想怎麼改進。',
+                wrong1: '你活該，誰叫你不早點做功課。',
+                wrong2: '沒關係，只是一次而已。'
+            },
+            {
+                scenario: '有同學因為家裡有狀況，最近常常在課堂中走神。',
+                correct: '我發現你最近好像有心事。如果願意，我可以聽聽你的故事。',
+                wrong1: '你上課不專心，老師會生氣的。',
+                wrong2: '那不關我的事。'
+            },
+            {
+                scenario: '新來的同學因為不認識大家，午餐時間都獨自坐著。',
+                correct: '要不要一起坐？我介紹班上的同學給你認識。',
+                wrong1: '他好奇怪，我不想跟他玩。',
+                wrong2: '他自己願意坐在那裡的。'
+            }
+        ];
+
+        let currentGame = null;
+        let memoryFlipped = [];
+        let memoryMatched = 0;
+        let memoryAttempts = 0;
+
+        // 開啟遊戲
+        function openGame(gameType) {
+            currentGame = gameType;
+            document.getElementById(gameType + '-modal').classList.add('active');
+            
+            if (gameType === 'memory') {
+                initMemoryGame();
+            } else if (gameType === 'empathy') {
+                initEmpathyGame();
+            } else if (gameType === 'decision') {
+                initDecisionGame();
+            }
+        }
+
+        // 關閉遊戲
+        function closeGame(gameType) {
+            document.getElementById(gameType + '-modal').classList.remove('active');
+        }
+
+        // 記憶遊戲
+        function initMemoryGame() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            memoryFlipped = [];
+            memoryMatched = 0;
+            memoryAttempts = 0;
+            
+            const cards = [];
+            emotionPairs.forEach(pair => {
+                cards.push({ content: pair.emoji, type: 'emoji' });
+                cards.push({ content: pair.text, type: 'text' });
+            });
+            
+            cards.sort(() => Math.random() - 0.5);
+            
+            cards.forEach((card, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'memory-card';
+                btn.textContent = '?';
+                btn.onclick = () => flipCard(idx, btn, card);
+                grid.appendChild(btn);
+            });
+            
+            document.getElementById('matched').textContent = '0';
+            document.getElementById('attempts').textContent = '0';
+        }
+
+        function flipCard(idx, btn, card) {
+            if (memoryFlipped.includes(idx) || btn.classList.contains('matched')) return;
+            
+            btn.classList.add('flipped');
+            btn.textContent = card.content;
+            memoryFlipped.push(idx);
+            
+            if (memoryFlipped.length === 2) {
+                memoryAttempts++;
+                const cards = document.querySelectorAll('.memory-card');
+                const card1 = cards[memoryFlipped[0]];
+                const card2 = cards[memoryFlipped[1]];
+                
+                if (card1.textContent === card2.textContent) {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    memoryMatched++;
+                    memoryFlipped = [];
+                    
+                    if (memoryMatched === emotionPairs.length) {
+                        alert('恭喜！你配對成功！');
+                    }
+                } else {
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        card1.textContent = '?';
+                        card2.textContent = '?';
+                        memoryFlipped = [];
+                    }, 1000);
+                }
+                
+                document.getElementById('matched').textContent = memoryMatched;
+                document.getElementById('attempts').textContent = memoryAttempts;
+            }
+        }
+
+        // 快速反應遊戲
+        function startReactionGame() {
+            const box = document.getElementById('reactionBox');
+            const timeDisplay = document.getElementById('reactionTime');
+            
+            const delay = Math.random() * 3000 + 1000;
+            box.classList.remove('active');
+            box.textContent = '等待中...';
+            timeDisplay.textContent = '';
+            
+            setTimeout(() => {
+                const startTime = Date.now();
+                box.classList.add('active');
+                box.textContent = '點我！';
+                
+                const clickHandler = () => {
+                    const reactionTime = Date.now() - startTime;
+                    box.classList.remove('active');
+                    timeDisplay.textContent = `反應時間：${reactionTime}毫秒`;
+                    box.removeEventListener('click', clickHandler);
+                };
+                
+                box.addEventListener('click', clickHandler);
+            }, delay);
+        }
+
+        // 同理心遊戲
+        function initEmpathyGame() {
+            const content = document.getElementById('empathyContent');
+            content.innerHTML = '';
+            
+            let score = 0;
+            empathyPairs.forEach((pair, idx) => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '30px';
+                div.style.paddingBottom = '20px';
+                div.style.borderBottom = '2px solid #FFF9C4';
+                
+                const scenarioDiv = document.createElement('div');
+                scenarioDiv.innerHTML = `<strong>情境${idx + 1}：</strong>${pair.scenario}`;
+                scenarioDiv.style.marginBottom = '15px';
+                div.appendChild(scenarioDiv);
+                
+                const options = [
+                    { text: pair.correct, isCorrect: true },
+                    { text: pair.wrong1, isCorrect: false },
+                    { text: pair.wrong2, isCorrect: false }
+                ];
+                options.sort(() => Math.random() - 0.5);
+                
+                const word = document.createElement('div');
+                word.className = 'word-game';
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'word-item';
+                    btn.textContent = opt.text;
+                    btn.style.maxWidth = '100%';
+                    btn.onclick = () => {
+                        if (opt.isCorrect) {
+                            btn.classList.add('correct');
+                            score++;
+                            alert('正確！你的同理心很好！');
+                        } else {
+                            btn.classList.add('wrong');
+                            alert('試試看其他選項。想想對方需要什麼樣的支持。');
+                        }
+                    };
+                    word.appendChild(btn);
+                });
+                
+                div.appendChild(word);
+                content.appendChild(div);
+            });
+        }
+
+        // 決策棋盤
+        function initDecisionGame() {
+            const content = document.getElementById('decisionContent');
+            content.innerHTML = '<p style="color: #000; font-size: 1.1em;">此為簡化版本。完整版本需要更多互動功能。</p>';
+        }
+
+        // 點擊外部關閉modal
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
