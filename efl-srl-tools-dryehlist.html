@@ -2,24 +2,23 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>國中老師 AI 工具資訊圖表懶人包</title>
+  <title>國中老師 AI 工具資訊圖表懶人包（投影友善版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #0f172a;
-      --bg-soft: #020617;
-      --card: #020617;
-      --card-soft: #0b1120;
-      --accent1: #38bdf8;
-      --accent2: #a855f7;
-      --accent3: #f97316;
-      --accent4: #22c55e;
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --border-soft: rgba(148, 163, 184, 0.3);
-      --shadow-soft: 0 22px 45px rgba(15, 23, 42, 0.7);
-      --radius-lg: 22px;
-      --radius-xl: 32px;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --card-soft: #f9fafb;
+      --accent1: #2563eb;  /* 藍 */
+      --accent2: #7c3aed;  /* 紫 */
+      --accent3: #ea580c;  /* 橘 */
+      --accent4: #16a34a;  /* 綠 */
+      --text-main: #111827;
+      --text-soft: #4b5563;
+      --border-soft: #e5e7eb;
+      --shadow-soft: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --radius-lg: 18px;
+      --radius-xl: 26px;
     }
 
     * {
@@ -31,7 +30,7 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+      background: var(--bg);
       color: var(--text-main);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
@@ -40,43 +39,34 @@
 
     .page {
       max-width: 1120px;
-      margin: 0 auto 80px;
+      margin: 0 auto 56px;
     }
+
+    /* HERO */
 
     .hero {
-      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.3), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.25), transparent 50%),
-                  linear-gradient(135deg, #020617, #020617);
-      border-radius: 28px;
-      padding: 28px 24px 26px;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.15), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(234, 88, 12, 0.12), transparent 55%),
+        var(--card);
+      border-radius: var(--radius-xl);
+      padding: 24px 20px 22px;
       box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 28px;
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle at 10% 0, rgba(56, 189, 248, 0.25), transparent 55%),
-                        radial-gradient(circle at 100% 60%, rgba(244, 114, 182, 0.18), transparent 60%);
-      mix-blend-mode: screen;
-      opacity: 0.6;
-      pointer-events: none;
+      border: 1px solid var(--border-soft);
+      margin-bottom: 24px;
     }
 
     .hero-inner {
-      position: relative;
-      z-index: 1;
       display: grid;
       grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
-      gap: 24px;
+      gap: 20px;
       align-items: center;
     }
 
     @media (max-width: 860px) {
+      body {
+        padding: 18px;
+      }
       .hero-inner {
         grid-template-columns: minmax(0, 1fr);
       }
@@ -88,44 +78,44 @@
       gap: 8px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.78);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: var(--accent1);
+      background: #e0ebff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
       font-size: 12px;
       margin-bottom: 10px;
     }
 
     .hero-tag span.emoji {
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .hero-title {
-      font-size: clamp(26px, 3vw, 32px);
+      font-size: clamp(24px, 3vw, 30px);
       font-weight: 750;
-      letter-spacing: 0.02em;
-      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+      margin-bottom: 8px;
     }
 
     .hero-subtitle {
       font-size: 14px;
       color: var(--text-soft);
       max-width: 32rem;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .hero-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .pill {
       font-size: 11px;
       padding: 4px 10px;
       border-radius: 999px;
-      border: 1px dashed rgba(148, 163, 184, 0.6);
-      background-color: rgba(15, 23, 42, 0.85);
+      border: 1px solid #d1d5db;
+      background-color: #f9fafb;
       color: var(--text-soft);
     }
 
@@ -151,46 +141,59 @@
     }
 
     .btn-primary {
-      background: linear-gradient(120deg, #38bdf8, #a855f7);
-      color: #0b1120;
-      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.35);
+      background: linear-gradient(120deg, #2563eb, #7c3aed);
+      color: #f9fafb;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
       font-weight: 600;
     }
 
     .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(56, 189, 248, 0.45);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
     }
 
     .btn-ghost {
-      background: rgba(15, 23, 42, 0.92);
-      color: var(--text-soft);
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
     }
 
     .btn-ghost:hover {
       transform: translateY(-1px);
-      background: rgba(15, 23, 42, 1);
+      background: #e0e7ff;
     }
 
     .hero-meta {
       font-size: 11px;
-      color: #94a3b8;
+      color: #6b7280;
       margin-top: 6px;
     }
 
     .hero-graphic {
       position: relative;
-      isolation: isolate;
+    }
+
+    .hero-ribbon {
+      position: absolute;
+      right: -18px;
+      top: 10px;
+      background: linear-gradient(135deg, #fb923c, #f97316);
+      color: #111827;
+      font-size: 11px;
+      padding: 3px 30px;
+      transform: rotate(14deg);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .hero-card {
-      border-radius: var(--radius-xl);
-      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 60%),
-                  linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.96));
-      padding: 16px 16px 14px;
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.9);
+      border-radius: 22px;
+      background: var(--card);
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
     }
 
     .hero-grid {
@@ -200,23 +203,10 @@
     }
 
     .hero-grid-card {
-      border-radius: 18px;
-      padding: 10px 10px 9px;
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 60%),
-                  rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-grid-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at bottom right, rgba(88, 28, 135, 0.35), transparent 60%);
-      opacity: 0.32;
-      mix-blend-mode: screen;
-      pointer-events: none;
+      border-radius: 16px;
+      padding: 9px 9px 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
     }
 
     .hero-grid-card-header {
@@ -224,8 +214,6 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 4px;
-      position: relative;
-      z-index: 1;
     }
 
     .hero-grid-emoji {
@@ -236,52 +224,26 @@
       align-items: center;
       justify-content: center;
       font-size: 13px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.75);
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
     }
 
     .hero-grid-title {
       font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.02em;
+      color: #111827;
     }
 
     .hero-grid-items {
       font-size: 11px;
       color: var(--text-soft);
-      position: relative;
-      z-index: 1;
     }
 
-    .hero-ribbon {
-      position: absolute;
-      right: -32px;
-      top: 12px;
-      background: linear-gradient(135deg, #a855f7, #ec4899);
-      color: #0f172a;
-      font-size: 11px;
-      padding: 4px 40px;
-      transform: rotate(21deg);
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.8);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    @media (max-width: 860px) {
-      body {
-        padding: 18px;
-      }
-      .hero {
-        padding: 20px 18px 18px;
-      }
-      .hero-card {
-        margin-top: 6px;
-      }
-    }
+    /* SECTION */
 
     .section {
-      margin-top: 32px;
+      margin-top: 28px;
     }
 
     .section-header {
@@ -289,7 +251,7 @@
       align-items: baseline;
       justify-content: space-between;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .section-title {
@@ -305,7 +267,7 @@
     .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 12px;
     }
 
     @media (max-width: 720px) {
@@ -317,11 +279,9 @@
     .card {
       border-radius: var(--radius-lg);
       padding: 14px 13px 12px;
-      background: radial-gradient(circle at top, rgba(30, 64, 175, 0.6), transparent 55%),
-                  radial-gradient(circle at bottom, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0.98));
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      position: relative;
-      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
     }
 
     .card-header {
@@ -345,8 +305,8 @@
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      background: rgba(15, 23, 42, 0.98);
-      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: #e5e7eb;
+      border: 1px solid #d1d5db;
     }
 
     .card-title {
@@ -359,8 +319,8 @@
       font-size: 11px;
       padding: 3px 9px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid #d1d5db;
+      background: #f3f4f6;
       color: var(--text-soft);
     }
 
@@ -381,15 +341,15 @@
       font-size: 11px;
       padding: 4px 9px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
       white-space: nowrap;
     }
 
-    .chip-blue { border-color: rgba(56, 189, 248, 0.75); }
-    .chip-purple { border-color: rgba(168, 85, 247, 0.8); }
-    .chip-orange { border-color: rgba(249, 115, 22, 0.8); }
-    .chip-green { border-color: rgba(34, 197, 94, 0.8); }
+    .chip-blue { border-color: #bfdbfe; }
+    .chip-purple { border-color: #ddd6fe; }
+    .chip-orange { border-color: #fed7aa; }
+    .chip-green { border-color: #bbf7d0; }
 
     .legend {
       display: flex;
@@ -406,8 +366,8 @@
       gap: 6px;
       padding: 3px 8px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px dashed rgba(148, 163, 184, 0.6);
+      background: #f9fafb;
+      border: 1px dashed #d1d5db;
     }
 
     .legend-dot {
@@ -416,19 +376,19 @@
       border-radius: 999px;
     }
 
-    .dot-blue { background: #38bdf8; }
-    .dot-purple { background: #a855f7; }
-    .dot-orange { background: #f97316; }
-    .dot-green { background: #22c55e; }
+    .dot-blue { background: #2563eb; }
+    .dot-purple { background: #7c3aed; }
+    .dot-orange { background: #ea580c; }
+    .dot-green { background: #16a34a; }
+
+    /* WORKFLOW */
 
     .workflow {
-      margin-top: 30px;
+      margin-top: 26px;
       border-radius: var(--radius-lg);
-      border: 1px dashed rgba(148, 163, 184, 0.7);
+      border: 1px dashed #d1d5db;
       padding: 12px 13px;
-      background: radial-gradient(circle at left, rgba(56, 189, 248, 0.18), transparent 65%),
-                  radial-gradient(circle at right, rgba(234, 179, 8, 0.14), transparent 60%),
-                  rgba(15, 23, 42, 0.98);
+      background: #fefce8;
     }
 
     .workflow-title {
@@ -438,6 +398,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      color: #92400e;
     }
 
     .workflow-steps {
@@ -454,52 +415,53 @@
     }
 
     .step {
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 8px 9px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: #fffbeb;
+      border: 1px solid #fed7aa;
     }
 
     .step-label {
       font-size: 11px;
       font-weight: 600;
       margin-bottom: 4px;
-      color: #38bdf8;
+      color: #c2410c;
     }
 
+    /* FOOTER */
+
     .footer {
-      margin-top: 32px;
+      margin-top: 26px;
       font-size: 11px;
-      color: #cbd5f5;
+      color: #6b7280;
       text-align: center;
-      padding-bottom: 10px;
-      border-top: 1px solid rgba(148, 163, 184, 0.4);
-      padding-top: 14px;
+      padding-bottom: 8px;
+      border-top: 1px solid var(--border-soft);
+      padding-top: 12px;
     }
 
     .footer p {
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     .footer .footer-small {
       font-size: 10px;
-      color: #94a3b8;
+      color: #9ca3af;
     }
 
     .footer .footer-section-title {
       font-weight: 600;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     a {
-      color: #38bdf8;
+      color: #2563eb;
       text-decoration: none;
     }
 
     a:hover {
       text-decoration: underline;
     }
-
   </style>
 </head>
 <body>
@@ -542,7 +504,7 @@
         <div class="hero-graphic">
           <div class="hero-ribbon">ETC：取 ➜ 轉 ➜ 合</div>
           <div class="hero-card">
-            <div style="font-size: 11px; color:#9ca3af; margin-bottom:8px;">
+            <div style="font-size: 11px; color:#6b7280; margin-bottom:8px;">
               一張圖看完今天的重點：
             </div>
             <div class="hero-grid">
@@ -827,12 +789,19 @@
     <!-- FOOTER / 版權與隱私 -->
     <footer class="footer">
       <p>
-        若您有特別希望教學及請葉老師開工作坊的部分，可寫信給葉老師聯絡。
+        若您有特別的教學需求，或希望葉惠菁教授開設相關工作坊，歡迎寫信至：
+        <strong>hyeh [at] yuntech.edu.tw</strong>
+        與葉教授聯絡。
       </p>
 
       <p class="footer-small">
-        首次製作：2022年11月 | Last updated: November, 2022<br />
-        最後更新：2025年11月14日 | Last updated: November 14, 2025
+        首次製作：2022年11月 | First organized: November 2022<br />
+        最後更新：2025年11月14日 | Last updated: November 14, 2025 with ChatGPT 5.1
+      </p>
+
+      <p class="footer-small">
+        本教材內容由葉惠菁特聘教授團隊編寫，2025年網頁排版與程式碼由 ChatGPT 5.1 協助生成。<br />
+        The teaching materials were authored by Distinguished Professor Hui-Chin Yeh and her Ensemble. The webpage layout and code in 2025 were generated with assistance from ChatGPT 5.1.
       </p>
 
       <p class="footer-small">
@@ -845,14 +814,14 @@
       </p>
 
       <p class="footer-small">
-        中文：我們不會在本工具上蒐集任何資料用於任何用途。<br />
-        如果您想分享您設計的教案 Prompt 供其他教師使用或供葉惠菁教授團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的 Google 雲端分享連結與詳細說明。<br />
+        我們不會在本工具上蒐集任何資料用於任何用途。<br />
+        如果您想分享您設計的教案 Prompt 供其他教師使用或供葉惠菁特聘教授及其團隊進行研究分析，請洽詢您參加的該場次研習，我們會提供該場次專屬的 Google 雲端分享連結與詳細說明。<br />
         本工具的設計內容之著作權歸屬於設計者。本平台僅提供想法熟練練習。設計者請確保尊重著作權，不建議商業用途。我們歡迎教師之間的知識分享與交流。
       </p>
 
       <p class="footer-small">
-        English: We do not collect any data on this tool for any purpose.<br />
-        If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh's team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.<br />
+        We do not collect any data on this tool for any purpose.<br />
+        If you'd like to share your designed prompts with other teachers or for Prof. Hui-Chin Yeh and her team's research analysis, please contact your workshop session. We will provide you with that session's dedicated Google Drive sharing link and detailed instructions.<br />
         The copyright of designs created with this tool belongs to the designer. This platform is intended for practicing ideas. Please respect copyright regulations and we do not recommend commercial use. We welcome knowledge sharing and exchange among teachers.
       </p>
     </footer>
