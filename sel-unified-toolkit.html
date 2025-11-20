@@ -416,16 +416,16 @@
             .dual-panel {
                 grid-template-columns: 1fr;
             }
-            
+
             header h1 {
                 font-size: 24px;
             }
-            
+
             .tab-navigation {
                 flex-wrap: wrap;
                 padding: 0 20px;
             }
-            
+
             .content-area {
                 padding: 20px;
             }
@@ -464,16 +464,16 @@
 
         <!-- Tab導航 -->
         <div class="tab-navigation">
-            <button class="tab-btn active" onclick="switchTab('tool1')">
+            <button class="tab-btn active" onclick="switchTab('tool1', this)">
                 📋 班級客製 | Customizer
             </button>
-            <button class="tab-btn" onclick="switchTab('tool2')">
+            <button class="tab-btn" onclick="switchTab('tool2', this)">
                 🤖 AI代理人設計 | Agent Designer
             </button>
-            <button class="tab-btn" onclick="switchTab('tool3')">
+            <button class="tab-btn" onclick="switchTab('tool3', this)">
                 ✨ 完整生成器 | Complete Generator
             </button>
-            <button class="tab-btn" onclick="switchTab('tool4')">
+            <button class="tab-btn" onclick="switchTab('tool4', this)">
                 🎮 互動遊戲 | Games & Activities
             </button>
         </div>
@@ -497,7 +497,12 @@
                     <!-- 班級資訊 -->
                     <div class="form-group">
                         <label class="form-label">學校名稱 | School Name</label>
-                        <input type="text" id="schoolName" value="雲林縣○○國中" disabled style="background: #F5F5F5;">
+                        <!-- 改成可編輯，不再 disabled -->
+                        <input
+                            type="text"
+                            id="schoolName"
+                            placeholder="例：雲林縣QQ國中"
+                            value="雲林縣○○國中">
                     </div>
 
                     <div class="form-group">
@@ -956,7 +961,8 @@
         </footer>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
         // SEL領域資料
         const SELDomains = [
             { name: '自我認識', en: 'Self-Awareness', desc: '了解自己的情緒與優勢' },
@@ -980,8 +986,8 @@
         // 生成SEL網格（Tool 2）
         function generateSELGrid() {
             const grid = document.getElementById('selGrid');
-            grid.innerHTML = SELDomains.map((sel, idx) => `
-                <button class="sel-btn" onclick="selectSEL('${sel.name}')">
+            grid.innerHTML = SELDomains.map((sel) => `
+                <button class="sel-btn" onclick="selectSEL('${sel.name}', this)">
                     <div><strong>${sel.name}</strong></div>
                     <div class="sel-description">${sel.en}</div>
                 </button>
@@ -989,18 +995,22 @@
         }
 
         // Tab切換
-        function switchTab(tabId) {
+        function switchTab(tabId, btn) {
             document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            }
         }
 
         // Tool 2: 選擇SEL
-        function selectSEL(name) {
+        function selectSEL(name, btn) {
             selectedSEL = name;
-            document.querySelectorAll('#selGrid .sel-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.sel-btn').classList.add('active');
+            document.querySelectorAll('#selGrid .sel-btn').forEach(b => b.classList.remove('active'));
+            if (btn) {
+                btn.classList.add('active');
+            }
             document.getElementById('selectedSEL').value = name;
         }
 
@@ -1015,23 +1025,24 @@
 
         // Tool 1: 生成Prompt
         function generateTool1Prompt() {
+            const schoolName = document.getElementById('schoolName').value || '未指定學校';
             const className = document.getElementById('className').value || '未指定';
             const classSize = document.getElementById('classSize').value || '未指定';
             const gradeSelected = document.querySelector('input[name="grade"]:checked');
             const grade = gradeSelected ? gradeSelected.value : '未選擇';
-            
+
             const selDomains = [];
             ['sel1', 'sel2', 'sel3', 'sel4', 'sel5'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) selDomains.push(el.value);
+                if (el && el.checked) selDomains.push(el.value);
             });
-            
+
             const characteristics = [];
             ['char1', 'char2', 'char3', 'char4', 'char5', 'char6'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) characteristics.push(el.value);
+                if (el && el.checked) characteristics.push(el.value);
             });
-            
+
             const activityType = document.getElementById('activityType').value || '未指定';
             const special = document.getElementById('specialNeeds').value || '無';
 
@@ -1041,13 +1052,13 @@
 - 班級年級：${grade}
 - 班級名稱：${className}
 - 班級人數：${classSize}人
-- 學校：雲林縣○○國中
+- 學校：${schoolName}
 
 ## SEL領域焦點
-${selDomains.length > 0 ? selDomains.map(s => `• ${s}`).join('\n') : '• 均衡發展五大SEL領域'}
+${selDomains.length > 0 ? selDomains.map(s => `• ${s}`).join('\\n') : '• 均衡發展五大SEL領域'}
 
 ## 班級特徵
-${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\n') : '• 多元化班級'}
+${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\\n') : '• 多元化班級'}
 
 ## 教學活動類型
 ${activityType}
@@ -1059,7 +1070,9 @@ ${special}
 根據以上班級特徵，建議採用多元化的SEL教學方式，特別強調${selDomains.length > 0 ? selDomains.join('、') : '五大SEL領域的均衡發展'}，讓${grade}的每位學生都能在安全、包容的班級環境中發展社情感能力。`;
 
             currentPrompt1 = prompt;
-            document.getElementById('preview1').textContent = prompt;
+            const preview = document.getElementById('preview1');
+            preview.textContent = prompt;
+            preview.classList.remove('preview-empty');
         }
 
         // Tool 2: 生成Prompt
@@ -1072,17 +1085,17 @@ ${special}
             const objective = document.getElementById('objective').value || '未指定';
             const gradeLevel = document.getElementById('gradeLevel').value || '未指定';
             const duration = document.getElementById('duration').value || '未指定';
-            
+
             const tools = [];
             ['tool2_1', 'tool2_2', 'tool2_3', 'tool2_4', 'tool2_5', 'tool2_6'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) tools.push(el.value);
+                if (el && el.checked) tools.push(el.value);
             });
-            
+
             const flows = [];
             ['flow1', 'flow2', 'flow3', 'flow4'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) flows.push(el.value);
+                if (el && el.checked) flows.push(el.value);
             });
 
             const prompt = `# SEL AI教學代理人設計指令
@@ -1098,16 +1111,18 @@ ${objective}
 - 教學時長：${duration}
 
 ## 教學工具和資源
-${tools.length > 0 ? tools.map(t => `• ${t}`).join('\n') : '• 混合多種資源'}
+${tools.length > 0 ? tools.map(t => `• ${t}`).join('\\n') : '• 混合多種資源'}
 
 ## 學習流程
-${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 提高認識 → 深入探討 → 實踐行動 → 反思評估'}
+${flows.length > 0 ? flows.map(f => `• ${f}`).join('\\n') : '• 提高認識 → 深入探討 → 實踐行動 → 反思評估'}
 
 ## 代理人角色設定
 您是一位有經驗的SEL教育推廣者，專門協助國中學生發展社情感能力。請根據上述參數，特別強調「${selectedSEL}」，為學生設計互動、有意義且安全的學習體驗。`;
 
             currentPrompt2 = prompt;
-            document.getElementById('preview2').textContent = prompt;
+            const preview = document.getElementById('preview2');
+            preview.textContent = prompt;
+            preview.classList.remove('preview-empty');
         }
 
         // Tool 3: 生成Prompt
@@ -1115,19 +1130,15 @@ ${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 提高認識 �
             const courseTitle = document.getElementById('courseTitle').value || 'SEL課程';
             const classInfo = document.getElementById('classInfo').value || '未指定';
             const duration = document.getElementById('courseDuration').value || '未指定';
-            
+
             const methods = [];
             ['method1', 'method2', 'method3', 'method4', 'method5', 'method6'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) methods.push(el.value);
+                if (el && el.checked) methods.push(el.value);
             });
-            
+
             const assessment = document.getElementById('assessment').value || '形成性評估';
             const notes = document.getElementById('additionalNotes').value || '無';
-
-            const selList = selectedSELs.length > 0 
-                ? selectedSELs.join('、')
-                : '五大SEL領域';
 
             const prompt = `# SEL完整課程設計Prompt
 
@@ -1137,10 +1148,12 @@ ${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 提高認識 �
 - 課程時間：${duration}
 
 ## 涵蓋的SEL領域
-${selectedSELs.length > 0 ? selectedSELs.map(s => `• ${s}`).join('\n') : '• 自我認識、自我管理、社會認識、關係管理、負責任決定'}
+${selectedSELs.length > 0
+    ? selectedSELs.map(s => \`• \${s}\`).join('\\n')
+    : '• 自我認識、自我管理、社會認識、關係管理、負責任決定'}
 
 ## 教學方法
-${methods.length > 0 ? methods.map(m => `• ${m}`).join('\n') : '• 多元教學策略'}
+${methods.length > 0 ? methods.map(m => \`• \${m}\`).join('\\n') : '• 多元教學策略'}
 
 ## 評估方式
 ${assessment}
@@ -1158,83 +1171,79 @@ ${notes}
 請根據以上資訊設計一份完整的課程大綱和教學活動。`;
 
             currentPrompt3 = prompt;
-            document.getElementById('preview3').textContent = prompt;
+            const preview = document.getElementById('preview3');
+            preview.textContent = prompt;
+            preview.classList.remove('preview-empty');
         }
 
-        // 複製Prompt
-        function copyTool1Prompt() {
-            if (!currentPrompt1) {
+        // 複製Prompt通用函式
+        function copyTextWithFeedback(text, feedbackId) {
+            if (!text) {
                 alert('請先生成Prompt | Please generate prompt first');
                 return;
             }
-            navigator.clipboard.writeText(currentPrompt1).then(() => {
-                const feedback = document.getElementById('copyFeedback');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            if (!navigator.clipboard) {
+                // fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            } else {
+                navigator.clipboard.writeText(text);
+            }
+            const feedback = document.getElementById(feedbackId);
+            feedback.classList.add('show');
+            setTimeout(() => feedback.classList.remove('show'), 2000);
+        }
+
+        function copyTool1Prompt() {
+            copyTextWithFeedback(currentPrompt1, 'copyFeedback');
         }
 
         function copyTool2Prompt() {
-            if (!currentPrompt2) {
-                alert('請先生成Prompt | Please generate prompt first');
-                return;
-            }
-            navigator.clipboard.writeText(currentPrompt2).then(() => {
-                const feedback = document.getElementById('copyFeedback2');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            copyTextWithFeedback(currentPrompt2, 'copyFeedback2');
         }
 
         function copyTool3Prompt() {
-            if (!currentPrompt3) {
-                alert('請先生成Prompt | Please generate prompt first');
-                return;
-            }
-            navigator.clipboard.writeText(currentPrompt3).then(() => {
-                const feedback = document.getElementById('copyFeedback3');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            copyTextWithFeedback(currentPrompt3, 'copyFeedback3');
         }
 
         function copyAIPrompt() {
             const template = document.getElementById('aiPromptTemplate').textContent;
-            navigator.clipboard.writeText(template).then(() => {
-                const feedback = document.getElementById('copyFeedback4');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            copyTextWithFeedback(template, 'copyFeedback4');
         }
 
         // 下載Prompt
-        function downloadTool1Prompt() {
-            if (!currentPrompt1) {
-                alert('請先生成Prompt | Please generate prompt first');
-                return;
-            }
-            downloadFile(currentPrompt1, 'SEL_Prompt.txt');
-        }
-
-        function downloadTool2Prompt() {
-            if (!currentPrompt2) {
-                alert('請先生成Prompt | Please generate prompt first');
-                return;
-            }
-            downloadFile(currentPrompt2, 'SEL_Agent_Prompt.txt');
-        }
-
-        function downloadTool3Prompt() {
-            if (!currentPrompt3) {
-                alert('請先生成Prompt | Please generate prompt first');
-                return;
-            }
-            downloadFile(currentPrompt3, 'SEL_Complete_Prompt.txt');
-        }
-
         function downloadFile(content, filename) {
+            if (!content) {
+                alert('請先生成Prompt | Please generate prompt first');
+                return;
+            }
             const element = document.createElement('a');
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
             element.setAttribute('download', filename);
             element.style.display = 'none';
-            d
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function downloadTool1Prompt() {
+            downloadFile(currentPrompt1, 'SEL_Prompt.txt');
+        }
+
+        function downloadTool2Prompt() {
+            downloadFile(currentPrompt2, 'SEL_Agent_Prompt.txt');
+        }
+
+        function downloadTool3Prompt() {
+            downloadFile(currentPrompt3, 'SEL_Complete_Prompt.txt');
+        }
+
+        // DOM載入完成後初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
