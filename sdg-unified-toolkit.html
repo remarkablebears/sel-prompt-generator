@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -469,13 +470,13 @@
 
         <!-- Tab導航 -->
         <div class="tab-navigation">
-            <button class="tab-btn active" onclick="switchTab('tool1')">
+            <button class="tab-btn active" onclick="switchTab('tool1', this)">
                 📋 班級客製 | Customizer
             </button>
-            <button class="tab-btn" onclick="switchTab('tool2')">
+            <button class="tab-btn" onclick="switchTab('tool2', this)">
                 🤖 AI代理人設計 | Agent Designer
             </button>
-            <button class="tab-btn" onclick="switchTab('tool3')">
+            <button class="tab-btn" onclick="switchTab('tool3', this)">
                 ✨ 完整生成器 | Complete Generator
             </button>
         </div>
@@ -908,11 +909,10 @@
             <p>與Claude.ai共構 | Co-Developed with Claude.ai</p>
             <p>最後更新 | Last Updated: 2025年11月18日 | November 18, 2025</p>
         </footer>
-            <p>最後更新 | Last Updated: 2025年11月18日 | November 18, 2025</p>
-        </footer>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
         // SDG資料
         const SDGs = [
             { num: 1, name: '消除貧困', en: 'No Poverty' },
@@ -929,7 +929,7 @@
             { num: 12, name: '負責任消費', en: 'Responsible Consumption' },
             { num: 13, name: '氣候行動', en: 'Climate Action' },
             { num: 14, name: '水下生物', en: 'Life Below Water' },
-            { num: 15, name: '陸上生物', en: 'Life on Land' },
+            { num: 15, name: '陸上生物', en: 'Life On Land' },
             { num: 16, name: '和平正義機構', en: 'Peace & Justice' },
             { num: 17, name: '夥伴關係', en: 'Partnerships' }
         ];
@@ -950,7 +950,7 @@
         function generateSDGGrid() {
             const grid = document.getElementById('sdgGrid');
             grid.innerHTML = SDGs.map(sdg => `
-                <button class="sdg-btn" onclick="selectSDG(${sdg.num})">
+                <button class="sdg-btn" onclick="selectSDG(${sdg.num}, this)">
                     <div><strong>SDG ${sdg.num}</strong></div>
                     <div class="sdg-description">${sdg.name}</div>
                 </button>
@@ -969,18 +969,19 @@
         }
 
         // Tab切換
-        function switchTab(tabId) {
+        function switchTab(tabId, button) {
             document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+            if (button) button.classList.add('active');
         }
 
         // Tool 2: 選擇SDG
-        function selectSDG(num) {
+        function selectSDG(num, button) {
             selectedSDG = num;
             document.querySelectorAll('#sdgGrid .sdg-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.sdg-btn').classList.add('active');
+            if (button) button.classList.add('active');
             
             const sdg = SDGs.find(s => s.num === num);
             document.getElementById('selectedSDG').value = `SDG ${num}: ${sdg.name} (${sdg.en})`;
@@ -1004,19 +1005,19 @@
             const characteristics = [];
             ['char1', 'char2', 'char3', 'char4', 'char5', 'char6'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) characteristics.push(el.value);
+                if (el && el.checked) characteristics.push(el.value);
             });
             
             const skills = [];
             ['skill1', 'skill2', 'skill3', 'skill4'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) skills.push(el.value);
+                if (el && el.checked) skills.push(el.value);
             });
             
             const styles = [];
             ['style1', 'style2', 'style3'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) styles.push(el.value);
+                if (el && el.checked) styles.push(el.value);
             });
             
             const strategy = document.getElementById('strategy').value || '未指定';
@@ -1052,7 +1053,11 @@ ${special}
 根據以上班級特徵，建議採用多元化的SDG英文教學方式，結合班級的學習風格和背景。特別強調${skills.length > 0 ? skills.join('、') : '聽說讀寫均衡發展'}，讓每位學生都能有意義地參與永續發展議題的英語學習。`;
 
             currentPrompt1 = prompt;
-            document.getElementById('preview1').textContent = prompt;
+            const preview = document.getElementById('preview1');
+            if (preview) {
+                preview.classList.remove('preview-empty');
+                preview.textContent = prompt;
+            }
         }
 
         // Tool 2: 生成Prompt
@@ -1070,19 +1075,19 @@ ${special}
             const engSkills = [];
             ['engskill1', 'engskill2', 'engskill3', 'engskill4'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) engSkills.push(el.value);
+                if (el && el.checked) engSkills.push(el.value);
             });
             
             const tools = [];
             ['tool2_1', 'tool2_2', 'tool2_3', 'tool2_4', 'tool2_5', 'tool2_6'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) tools.push(el.value);
+                if (el && el.checked) tools.push(el.value);
             });
             
             const flows = [];
             ['flow1', 'flow2', 'flow3', 'flow4'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) flows.push(el.value);
+                if (el && el.checked) flows.push(el.value);
             });
 
             const prompt = `# SDG AI教學代理人設計指令
@@ -1110,7 +1115,11 @@ ${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 知識導入 �
 您是一位有經驗的SDG教育推廣者，專門協助國中學生理解和實踐永續發展目標。請根據上述參數，特別強調${engSkills.length > 0 ? engSkills.join('、') : '聽說讀寫均衡發展'}，為學生設計互動、有意義的英語學習體驗。`;
 
             currentPrompt2 = prompt;
-            document.getElementById('preview2').textContent = prompt;
+            const preview = document.getElementById('preview2');
+            if (preview) {
+                preview.classList.remove('preview-empty');
+                preview.textContent = prompt;
+            }
         }
 
         // Tool 3: 生成Prompt
@@ -1122,7 +1131,7 @@ ${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 知識導入 �
             const methods = [];
             ['method1', 'method2', 'method3', 'method4', 'method5', 'method6'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el.checked) methods.push(el.value);
+                if (el && el.checked) methods.push(el.value);
             });
             
             const assessment = document.getElementById('assessment').value || '形成性評估';
@@ -1161,7 +1170,11 @@ ${notes}
 請根據以上資訊設計一份完整的課程大綱和教學活動。`;
 
             currentPrompt3 = prompt;
-            document.getElementById('preview3').textContent = prompt;
+            const preview = document.getElementById('preview3');
+            if (preview) {
+                preview.classList.remove('preview-empty');
+                preview.textContent = prompt;
+            }
         }
 
         // 複製Prompt
@@ -1231,4 +1244,13 @@ ${notes}
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
             element.setAttribute('download', filename);
             element.style.display = 'none';
-            d
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+```
