@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -422,16 +421,16 @@
             .dual-panel {
                 grid-template-columns: 1fr;
             }
-            
+
             header h1 {
                 font-size: 24px;
             }
-            
+
             .tab-navigation {
                 flex-wrap: wrap;
                 padding: 0 20px;
             }
-            
+
             .content-area {
                 padding: 20px;
             }
@@ -491,16 +490,16 @@
                 <div>
                     <div class="info-banner">
                         <strong>💡 使用步驟</strong>
-                        <p>1. 填寫班級基本資訊</p>
+                        <p>1. 填寫學校與班級基本資訊</p>
                         <p>2. 選擇教學策略和班級特徵</p>
                         <p>3. 點擊「生成Prompt」</p>
                         <p>4. 複製或下載到AI工具使用</p>
                     </div>
 
-                    <!-- 班級資訊 -->
+                    <!-- 學校與班級資訊 -->
                     <div class="form-group">
                         <label class="form-label">學校名稱 | School Name</label>
-                        <input type="text" id="schoolName" value="雲林縣○○國中" disabled style="background: #F5F5F5;">
+                        <input type="text" id="schoolName" placeholder="例：雲林縣○○國中" value="雲林縣○○國中">
                     </div>
 
                     <div class="form-group">
@@ -710,6 +709,7 @@
                             <option value="單堂課（45分鐘）">單堂課（45分鐘）</option>
                             <option value="跨堂（2-3堂課）">跨堂（2-3堂課）</option>
                             <option value="單元課程（4堂課以上）">單元課程（4堂課以上）</option>
+                            <option value="整學期課程">整學期課程</option>
                         </select>
                     </div>
 
@@ -911,7 +911,6 @@
         </footer>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
         // SDG資料
         const SDGs = [
@@ -921,7 +920,7 @@
             { num: 4, name: '優質教育', en: 'Quality Education' },
             { num: 5, name: '性別平等', en: 'Gender Equality' },
             { num: 6, name: '潔淨水資源', en: 'Clean Water' },
-            { num: 7, name: '可負擔能源', en: 'Affordable Energy' },
+            { num: 7, name: '可負擔能源', en: 'Affordable and Clean Energy' },
             { num: 8, name: '經濟成長就業', en: 'Decent Work' },
             { num: 9, name: '產業創新基礎', en: 'Industry Innovation' },
             { num: 10, name: '減少不平等', en: 'Reduced Inequalities' },
@@ -982,7 +981,7 @@
             selectedSDG = num;
             document.querySelectorAll('#sdgGrid .sdg-btn').forEach(btn => btn.classList.remove('active'));
             if (button) button.classList.add('active');
-            
+
             const sdg = SDGs.find(s => s.num === num);
             document.getElementById('selectedSDG').value = `SDG ${num}: ${sdg.name} (${sdg.en})`;
         }
@@ -999,27 +998,28 @@
 
         // Tool 1: 生成Prompt
         function generateTool1Prompt() {
+            const schoolName = document.getElementById('schoolName').value || '雲林縣○○國中';
             const className = document.getElementById('className').value || 'SDG班級';
             const classSize = document.getElementById('classSize').value || '未指定';
-            
+
             const characteristics = [];
             ['char1', 'char2', 'char3', 'char4', 'char5', 'char6'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.checked) characteristics.push(el.value);
             });
-            
+
             const skills = [];
             ['skill1', 'skill2', 'skill3', 'skill4'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.checked) skills.push(el.value);
             });
-            
+
             const styles = [];
             ['style1', 'style2', 'style3'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.checked) styles.push(el.value);
             });
-            
+
             const strategy = document.getElementById('strategy').value || '未指定';
             const cultural = document.getElementById('culturalBackground').value || '未指定';
             const special = document.getElementById('specialNeeds').value || '無';
@@ -1027,9 +1027,9 @@
             const prompt = `# 國中SDG班級客製化英文教學Prompt
 
 ## 班級資訊
+- 學校名稱：${schoolName}
 - 班級名稱：${className}
 - 班級人數：${classSize}人
-- 學校：雲林縣○○國中
 
 ## 班級特徵
 ${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\n') : '• 多元化班級'}
@@ -1071,19 +1071,19 @@ ${special}
             const objective = document.getElementById('objective').value || '未指定';
             const gradeLevel = document.getElementById('gradeLevel').value || '未指定';
             const duration = document.getElementById('duration').value || '未指定';
-            
+
             const engSkills = [];
             ['engskill1', 'engskill2', 'engskill3', 'engskill4'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.checked) engSkills.push(el.value);
             });
-            
+
             const tools = [];
             ['tool2_1', 'tool2_2', 'tool2_3', 'tool2_4', 'tool2_5', 'tool2_6'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.checked) tools.push(el.value);
             });
-            
+
             const flows = [];
             ['flow1', 'flow2', 'flow3', 'flow4'].forEach(id => {
                 const el = document.getElementById(id);
@@ -1127,18 +1127,21 @@ ${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 知識導入 �
             const courseTitle = document.getElementById('courseTitle').value || 'SDG課程';
             const classInfo = document.getElementById('classInfo').value || '未指定';
             const duration = document.getElementById('courseDuration').value || '未指定';
-            
+
             const methods = [];
             ['method1', 'method2', 'method3', 'method4', 'method5', 'method6'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.checked) methods.push(el.value);
             });
-            
+
             const assessment = document.getElementById('assessment').value || '形成性評估';
             const notes = document.getElementById('additionalNotes').value || '無';
 
-            const sdgList = selectedSDGs.length > 0 
-                ? selectedSDGs.map(n => `SDG ${n}: ${SDGs.find(s => s.num === n).name}`).join('\n')
+            const sdgList = selectedSDGs.length > 0
+                ? selectedSDGs.map(n => {
+                    const sdg = SDGs.find(s => s.num === n);
+                    return `SDG ${n}: ${sdg.name}`;
+                }).join('\n')
                 : '多個SDG目標';
 
             const prompt = `# SDG完整課程設計Prompt
@@ -1177,17 +1180,51 @@ ${notes}
             }
         }
 
+        // 通用複製函式（含 fallback，方便國中電腦教室在 file:// 或較舊環境使用）
+        function copyTextWithFallback(text, feedbackElementId) {
+            if (!text) return;
+
+            const feedback = document.getElementById(feedbackElementId);
+
+            function showFeedback() {
+                if (!feedback) return;
+                feedback.classList.add('show');
+                setTimeout(() => feedback.classList.remove('show'), 2000);
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showFeedback).catch(() => {
+                    fallbackCopy();
+                });
+            } else {
+                fallbackCopy();
+            }
+
+            function fallbackCopy() {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showFeedback();
+                } catch (e) {
+                    alert('此環境無法自動複製內容，請手動選取文字複製。');
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
         // 複製Prompt
         function copyTool1Prompt() {
             if (!currentPrompt1) {
                 alert('請先生成Prompt | Please generate prompt first');
                 return;
             }
-            navigator.clipboard.writeText(currentPrompt1).then(() => {
-                const feedback = document.getElementById('copyFeedback');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            copyTextWithFallback(currentPrompt1, 'copyFeedback');
         }
 
         function copyTool2Prompt() {
@@ -1195,11 +1232,7 @@ ${notes}
                 alert('請先生成Prompt | Please generate prompt first');
                 return;
             }
-            navigator.clipboard.writeText(currentPrompt2).then(() => {
-                const feedback = document.getElementById('copyFeedback2');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            copyTextWithFallback(currentPrompt2, 'copyFeedback2');
         }
 
         function copyTool3Prompt() {
@@ -1207,11 +1240,7 @@ ${notes}
                 alert('請先生成Prompt | Please generate prompt first');
                 return;
             }
-            navigator.clipboard.writeText(currentPrompt3).then(() => {
-                const feedback = document.getElementById('copyFeedback3');
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 2000);
-            });
+            copyTextWithFallback(currentPrompt3, 'copyFeedback3');
         }
 
         // 下載Prompt
@@ -1253,4 +1282,3 @@ ${notes}
     </script>
 </body>
 </html>
-```
