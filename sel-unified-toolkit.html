@@ -211,6 +211,23 @@
             background: #1565C0;
         }
 
+        /* 讓 a.primary 看起來和按鈕一致 */
+        a.primary {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            background: #F57F17;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        a.primary:hover {
+            background: #E65100;
+        }
+
         /* 複選框樣式 */
         .checkbox-group {
             display: grid;
@@ -464,16 +481,16 @@
 
         <!-- Tab導航 -->
         <div class="tab-navigation">
-            <button class="tab-btn active" onclick="switchTab('tool1', this)">
+            <button class="tab-btn active" data-target="tool1">
                 📋 班級客製 | Customizer
             </button>
-            <button class="tab-btn" onclick="switchTab('tool2', this)">
+            <button class="tab-btn" data-target="tool2">
                 🤖 AI代理人設計 | Agent Designer
             </button>
-            <button class="tab-btn" onclick="switchTab('tool3', this)">
+            <button class="tab-btn" data-target="tool3">
                 ✨ 完整生成器 | Complete Generator
             </button>
-            <button class="tab-btn" onclick="switchTab('tool4', this)">
+            <button class="tab-btn" data-target="tool4">
                 🎮 互動遊戲 | Games & Activities
             </button>
         </div>
@@ -497,12 +514,12 @@
                     <!-- 班級資訊 -->
                     <div class="form-group">
                         <label class="form-label">學校名稱 | School Name</label>
-                        <!-- 改成可編輯，不再 disabled -->
+                        <!-- 可以填入 OO 國中：預設留白，placeholder 提示 -->
                         <input
                             type="text"
                             id="schoolName"
-                            placeholder="例：雲林縣QQ國中"
-                            value="雲林縣○○國中">
+                            placeholder="例：雲林縣OO國中"
+                            value="">
                     </div>
 
                     <div class="form-group">
@@ -614,9 +631,9 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="primary" onclick="generateTool1Prompt()">📝 生成 | Generate</button>
-                        <button class="secondary" onclick="copyTool1Prompt()">📋 複製 | Copy</button>
-                        <button class="secondary" onclick="downloadTool1Prompt()">⬇️ 下載 | Download</button>
+                        <button type="button" class="primary" id="btnTool1Generate">📝 生成 | Generate</button>
+                        <button type="button" class="secondary" id="btnTool1Copy">📋 複製 | Copy</button>
+                        <button type="button" class="secondary" id="btnTool1Download">⬇️ 下載 | Download</button>
                     </div>
                 </div>
 
@@ -744,9 +761,9 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="primary" onclick="generateTool2Prompt()">📝 生成 | Generate</button>
-                        <button class="secondary" onclick="copyTool2Prompt()">📋 複製 | Copy</button>
-                        <button class="secondary" onclick="downloadTool2Prompt()">⬇️ 下載 | Download</button>
+                        <button type="button" class="primary" id="btnTool2Generate">📝 生成 | Generate</button>
+                        <button type="button" class="secondary" id="btnTool2Copy">📋 複製 | Copy</button>
+                        <button type="button" class="secondary" id="btnTool2Download">⬇️ 下載 | Download</button>
                     </div>
                 </div>
 
@@ -805,23 +822,23 @@
                     <p style="font-size: 12px; color: #666; margin-bottom: 12px;">可複選多個領域</p>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="sel3_1" value="自我認識" onchange="toggleSEL3('自我認識')">
+                            <input type="checkbox" id="sel3_1" value="自我認識">
                             <label for="sel3_1">自我認識 | Self-Awareness</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="sel3_2" value="自我管理" onchange="toggleSEL3('自我管理')">
+                            <input type="checkbox" id="sel3_2" value="自我管理">
                             <label for="sel3_2">自我管理 | Self-Management</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="sel3_3" value="社會認識" onchange="toggleSEL3('社會認識')">
+                            <input type="checkbox" id="sel3_3" value="社會認識">
                             <label for="sel3_3">社會認識 | Social Awareness</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="sel3_4" value="關係管理" onchange="toggleSEL3('關係管理')">
+                            <input type="checkbox" id="sel3_4" value="關係管理">
                             <label for="sel3_4">關係管理 | Relationship Skills</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="sel3_5" value="負責任決定" onchange="toggleSEL3('負責任決定')">
+                            <input type="checkbox" id="sel3_5" value="負責任決定">
                             <label for="sel3_5">負責任決定 | Responsible Decision-Making</label>
                         </div>
                     </div>
@@ -868,9 +885,9 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="primary" onclick="generateTool3Prompt()">📝 生成 | Generate</button>
-                        <button class="secondary" onclick="copyTool3Prompt()">📋 複製 | Copy</button>
-                        <button class="secondary" onclick="downloadTool3Prompt()">⬇️ 下載 | Download</button>
+                        <button type="button" class="primary" id="btnTool3Generate">📝 生成 | Generate</button>
+                        <button type="button" class="secondary" id="btnTool3Copy">📋 複製 | Copy</button>
+                        <button type="button" class="secondary" id="btnTool3Download">⬇️ 下載 | Download</button>
                     </div>
                 </div>
 
@@ -898,7 +915,7 @@
             </div>
 
             <div class="button-group">
-                <a href="sel-games-examples.html" class="primary" style="text-decoration: none; display: inline-block;">
+                <a href="sel-games-examples.html" class="primary">
                     🎮 查看遊戲範例 | View Game Examples
                 </a>
             </div>
@@ -934,7 +951,7 @@
             </div>
 
             <div class="button-group">
-                <button class="secondary" onclick="copyAIPrompt()">📋 複製此Prompt模版 | Copy Template</button>
+                <button type="button" class="secondary" id="btnAIPromptCopy">📋 複製此Prompt模版 | Copy Template</button>
             </div>
 
             <div id="copyFeedback4" class="copy-feedback">✅ 已複製到剪貼板 | Copied to clipboard!</div>
@@ -981,27 +998,70 @@
         // 初始化
         function init() {
             generateSELGrid();
+            bindTabEvents();
+            bindButtons();
+        }
+
+        // 綁定 Tab 事件
+        function bindTabEvents() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-target');
+                    document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                    tab.classList.add('active');
+                });
+            });
+        }
+
+        // 綁定按鈕事件
+        function bindButtons() {
+            // Tool 1
+            document.getElementById('btnTool1Generate').addEventListener('click', generateTool1Prompt);
+            document.getElementById('btnTool1Copy').addEventListener('click', () => copyTool1Prompt());
+            document.getElementById('btnTool1Download').addEventListener('click', () => downloadTool1Prompt());
+
+            // Tool 2
+            document.getElementById('btnTool2Generate').addEventListener('click', generateTool2Prompt);
+            document.getElementById('btnTool2Copy').addEventListener('click', () => copyTool2Prompt());
+            document.getElementById('btnTool2Download').addEventListener('click', () => downloadTool2Prompt());
+
+            // Tool 3
+            document.getElementById('btnTool3Generate').addEventListener('click', generateTool3Prompt);
+            document.getElementById('btnTool3Copy').addEventListener('click', () => copyTool3Prompt());
+            document.getElementById('btnTool3Download').addEventListener('click', () => downloadTool3Prompt());
+
+            // Tool 4 AI Prompt Copy
+            document.getElementById('btnAIPromptCopy').addEventListener('click', copyAIPrompt);
         }
 
         // 生成SEL網格（Tool 2）
         function generateSELGrid() {
             const grid = document.getElementById('selGrid');
             grid.innerHTML = SELDomains.map((sel) => `
-                <button class="sel-btn" onclick="selectSEL('${sel.name}', this)">
+                <button type="button" class="sel-btn" data-sel="${sel.name}">
                     <div><strong>${sel.name}</strong></div>
                     <div class="sel-description">${sel.en}</div>
                 </button>
             `).join('');
-        }
 
-        // Tab切換
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if (btn) {
-                btn.classList.add('active');
-            }
+            // 綁定 SEL 按鈕事件
+            grid.querySelectorAll('.sel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const name = btn.getAttribute('data-sel');
+                    selectSEL(name, btn);
+                });
+            });
+
+            // Tool 3 SEL checkbox 綁定
+            ['sel3_1','sel3_2','sel3_3','sel3_4','sel3_5'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => toggleSEL3(el.value));
+                }
+            });
         }
 
         // Tool 2: 選擇SEL
@@ -1055,10 +1115,10 @@
 - 學校：${schoolName}
 
 ## SEL領域焦點
-${selDomains.length > 0 ? selDomains.map(s => `• ${s}`).join('\\n') : '• 均衡發展五大SEL領域'}
+${selDomains.length > 0 ? selDomains.map(s => `• ${s}`).join('\n') : '• 均衡發展五大SEL領域'}
 
 ## 班級特徵
-${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\\n') : '• 多元化班級'}
+${characteristics.length > 0 ? characteristics.map(c => `• ${c}`).join('\n') : '• 多元化班級'}
 
 ## 教學活動類型
 ${activityType}
@@ -1111,10 +1171,10 @@ ${objective}
 - 教學時長：${duration}
 
 ## 教學工具和資源
-${tools.length > 0 ? tools.map(t => `• ${t}`).join('\\n') : '• 混合多種資源'}
+${tools.length > 0 ? tools.map(t => `• ${t}`).join('\n') : '• 混合多種資源'}
 
 ## 學習流程
-${flows.length > 0 ? flows.map(f => `• ${f}`).join('\\n') : '• 提高認識 → 深入探討 → 實踐行動 → 反思評估'}
+${flows.length > 0 ? flows.map(f => `• ${f}`).join('\n') : '• 提高認識 → 深入探討 → 實踐行動 → 反思評估'}
 
 ## 代理人角色設定
 您是一位有經驗的SEL教育推廣者，專門協助國中學生發展社情感能力。請根據上述參數，特別強調「${selectedSEL}」，為學生設計互動、有意義且安全的學習體驗。`;
@@ -1149,11 +1209,11 @@ ${flows.length > 0 ? flows.map(f => `• ${f}`).join('\\n') : '• 提高認識 
 
 ## 涵蓋的SEL領域
 ${selectedSELs.length > 0
-    ? selectedSELs.map(s => \`• \${s}\`).join('\\n')
+    ? selectedSELs.map(s => `• ${s}`).join('\n')
     : '• 自我認識、自我管理、社會認識、關係管理、負責任決定'}
 
 ## 教學方法
-${methods.length > 0 ? methods.map(m => \`• \${m}\`).join('\\n') : '• 多元教學策略'}
+${methods.length > 0 ? methods.map(m => `• ${m}`).join('\n') : '• 多元教學策略'}
 
 ## 評估方式
 ${assessment}
